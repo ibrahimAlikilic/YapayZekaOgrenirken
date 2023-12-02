@@ -16,13 +16,50 @@ HOG sadece kişi tanıma değil farklı nesnelerin tanınmasında da özellik ç
 Neyseki OPENCV içerisinde halihazırda eğitilmiş HOG + Linear SVM modeli mevcut. Biz de bunu kullanarak görüntü ya da video üzerinde yaya tanıma işlemini gerçekleştirebiliriz. Bu yazı kapsamında vereceğim örnekte KAIST Multispectral Pedestrian Detection  veri seti kullanılmıştır Bu veri setinin avantajı RGB + Thermal band içermesidir. Hem böylelikle yaya tespitine örnek vermekle birlikte thermal bandının bu problemde kullanımının getirdiği avantajları da görmüş olacağız.<br>
 Bunu okuduğum site linki : https://ibrahimdelibasoglu.blogspot.com/2017/01/python-yaya-tespiti-goruntu-isleme.html
 '''
+
+'''
+ import argparse
+
+def main():
+    # Argüman analizi için bir ArgumentParser örneği oluşturun
+    parser = argparse.ArgumentParser(description='Bu programın açıklaması.')
+
+    # --input veya -i argümanı ekle
+    parser.add_argument('--input', '-i', help='Giriş dosyasının yolu')
+
+    # --output veya -o argümanı ekle
+    parser.add_argument('--output', '-o', help='Çıkış dosyasının yolu')
+
+    # --verbose veya -v argümanını ekleyerek daha fazla çıktı almayı etkinleştirin
+    parser.add_argument('--verbose', '-v', action='store_true', help='Daha fazla çıktı al')
+
+    # Argümanları analiz et
+    args = parser.parse_args()
+
+    # Elde edilen argümanları kullanarak işlemleri gerçekleştirin
+    if args.verbose:
+        print('Daha fazla çıktı etkinleştirildi.')
+
+    if args.input:
+        print(f'Giriş dosyası: {args.input}')
+
+    if args.output:
+        print(f'Çıkış dosyası: {args.output}')
+
+if __name__ == '__main__':
+    main()
+
+ '''
+
+
+
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True,
 	help="\input")
 args = vars(ap.parse_args())
 # load the image from disk
-image = cv2.imread(args["\input\\image.png"])
+image = cv2.imread(args["image"])
 # loop over the rotation angles
 for angle in np.arange(0, 360, 15):
 	rotated = imutils.rotate(image, angle)
@@ -34,3 +71,4 @@ for angle in np.arange(0, 360, 15):
 	rotated = imutils.rotate_bound(image, angle)
 	cv2.imshow("Rotated (Correct)", rotated)
 	cv2.waitKey(0)
+ 
