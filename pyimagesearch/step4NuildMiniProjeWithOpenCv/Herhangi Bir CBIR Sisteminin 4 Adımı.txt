@@ -1,0 +1,21 @@
+Hangi İçerik Tabanlı Görüntü Erişim Sistemini oluşturuyor olursanız olun, bunların tümü 4 farklı adıma ayrılabilir:
+
+Görsel tanımlayıcınızı tanımlama: Bu aşamada görselin hangi yönünü tanımlamak istediğinize karar vermeniz gerekir. Resmin rengiyle ilgileniyor musunuz? Resimdeki bir nesnenin şekli? Yoksa dokuyu karakterize etmek mi istiyorsunuz?
+
+Veri kümenizi dizine ekleme: Artık görüntü tanımlayıcınızı tanımladığınıza göre, işiniz bu görüntü tanımlayıcıyı veri kümenizdeki her görüntüye uygulamak, bu görüntülerden özellikler çıkarmak ve özellikleri depolamaya yazmaktır (ör. CSV dosyası, RDBMS, Redis, vb.) böylece daha sonra benzerlik açısından karşılaştırılabilirler.
+
+Benzerlik ölçütünüzü tanımlama: Harika, artık bir sürü özellik vektörünüz var. Ama onları nasıl karşılaştıracaksınız? Popüler seçenekler arasında Öklid uzaklığı, Kosinüs uzaklığı ve ki-kare uzaklığı bulunur, ancak gerçek seçim büyük ölçüde (1) veri kümenize ve (2) çıkardığınız özellik türlerine bağlıdır.
+
+Arama: Son adım gerçek bir arama gerçekleştirmektir. Bir kullanıcı sisteminize bir sorgu görüntüsü gönderecektir (örneğin bir yükleme formundan veya bir mobil uygulama aracılığıyla) ve işiniz (1) bu sorgu görüntüsünden özellikler çıkarmak ve ardından (2) karşılaştırmak için benzerlik işlevinizi uygulamak olacaktır. sorgu özelliklerini zaten dizine eklenmiş olan özelliklere göre değiştirin. Buradan, benzerlik fonksiyonunuza göre en alakalı sonuçları döndürmeniz yeterlidir.
+
+
+
+
+
+Genel olarak, (1) veri kümenizin boyutuna ve (2) veri kümenizdeki renk dağılımlarının birbirine ne kadar benzer olduğuna bağlı olduğundan, renk histogram tanımlayıcınız için bölme sayısını denemek isteyeceksiniz.
+
+Tatil fotoğrafı görseli arama motorumuz için, HSV renk uzayında Hue kanalı için 8 bölmeli, doygunluk kanalı için 12 bölmeli ve değer kanalı için 3 bölmeli bir 3 boyutlu renk histogramı kullanacağız ve böylece toplam bir özellik vektörü elde edeceğiz. 8 x 12 x 3 = 288 boyutunda .
+
+Bu, veri setimizdeki her görüntü için, görüntü 36 x 36 piksel veya 2000 x 1800 piksel olursa olsun, tüm görüntülerin yalnızca 288 kayan nokta sayısından oluşan bir liste kullanılarak soyut olarak temsil edileceği ve niceliğinin belirleneceği anlamına gelir.
+
+Bir 3 boyutlu histogramı açıklamanın en iyi yolunun VE bağlacı kullanmak olduğunu düşünüyorum . Bir 3D HSV renk tanımlayıcısı, belirli bir görüntüye kaç pikselin 1 numaralı bölmeye düşen bir Ton değerine sahip olduğunu VE kaç pikselin 1 numaralı bölmeye düşen bir Doygunluk değerine sahip olduğunu VE kaç pikselin # bölmeye düşen bir Değer yoğunluğuna sahip olduğunu soracaktır. 1. Bu gereksinimleri karşılayan piksel sayısı daha sonra tablo haline getirilir. Bu işlem her kutu kombinasyonu için tekrarlanır; ancak bunu hesaplama açısından son derece verimli bir şekilde yapabiliyoruz.

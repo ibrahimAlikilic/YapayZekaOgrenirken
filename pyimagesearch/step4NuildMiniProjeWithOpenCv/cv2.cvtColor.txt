@@ -1,0 +1,25 @@
+OpenCV Color Spaces ( cv2.cvtColor )
+In the first part of this tutorial, we’ll discuss the importance of lighting conditions in any computer vision and image processing pipeline.
+
+We’ll then review the three goals you should seek to obtain when working with lighting conditions:
+
+High contrast
+Generalizable (Genelleştirilebilir)
+Stable
+From there we’ll configure our development environment and review our project directory structure.
+
+We’ll then implement Python code to work with four color spaces/models in OpenCV:
+
+RGB
+HSV
+L*a*b*
+Grayscale
+We’ll wrap up this tutorial with a discussion of our results.
+
+
+
+OpenCV ile bir belge tarayıcı oluşturmak yalnızca üç basit adımda gerçekleştirilebilir:
+
+Adım 1: Kenarları tespit edin.
+Adım 2: Taranan kağıt parçasını temsil eden konturu (anahattı) bulmak için görüntüdeki kenarları kullanın.
+Adım 3: Belgenin yukarıdan aşağıya görünümünü elde etmek için perspektif dönüşümü uygulayın.
