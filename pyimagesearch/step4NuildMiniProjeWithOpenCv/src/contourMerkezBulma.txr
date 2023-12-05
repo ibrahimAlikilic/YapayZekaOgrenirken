@@ -1,0 +1,5 @@
+Bu hedeflere ulaşmak için, aşağıdakiler de dahil olmak üzere bir miktar görüntü ön işlemesi yapmamız gerekecek:
+
+Gri tonlamaya dönüştürme.
+Kontur algılama sürecimizi daha doğru hale getirmek amacıyla yüksek frekanslı gürültüyü azaltmak için bulanıklaştırma.
+Görüntünün ikilileştirilmesi. Bu işlem için genellikle kenar algılama ve eşikleme kullanılır.
