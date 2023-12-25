@@ -1,0 +1,82 @@
+# import the necessary packages
+import datetime
+class FPS:
+	def __init__(self):
+		# store the start time, end time, and total number of frames
+		# that were examined between the start and end intervals
+		self._start = None
+		self._end = None
+		self._numFrames = 0
+	def start(self):
+		# start the timer
+		self._start = datetime.datetime.now()
+		return self
+	def stop(self):
+		# stop the timer
+		self._end = datetime.datetime.now()
+	def update(self):
+		# increment the total number of frames examined during the
+		# start and end intervals
+		self._numFrames += 1
+	def elapsed(self):
+		# return the total number of seconds between the start and
+		# end interval
+		return (self._end - self._start).total_seconds()
+	def fps(self):
+		# compute the (approximate) frames per second
+		return self._numFrames / self.elapsed()
+'''
+__init__(self): Bu metot, sınıfın başlatıcı (constructor) metotudur. Başlangıçta _start ve _end değerleri None olarak atanırken, _numFrames değeri sıfıra eşitlenir. Bu değerler, zamanı takip etmek ve kare sayısını saymak için kullanılır.
+
+start(self): Bu metot, zaman ölçümünü başlatır. _start değerini şu anki zamana ayarlar ve sınıf örneğini döndürür. Bu sayede zincirleme metot çağrıları mümkün olur.
+
+stop(self): Bu metot, zaman ölçümünü durdurur. _end değerini şu anki zamana ayarlar.
+
+update(self): Bu metot, her karede çağrılarak _numFrames değerini bir artırır. Bu sayede geçen kare sayısı kaydedilir.
+
+elapsed(self): Bu metot, başlangıç ve bitiş arasındaki toplam süreyi saniye cinsinden döndürür.
+
+fps(self): Bu metot, (ortalama) saniyedeki kare sayısını hesaplar ve döndürür. Bu değer, _numFrames'in _start ve _end arasındaki süre ile bölünmesiyle elde edilir.
+'''
+
+# import the necessary packages
+from threading import Thread
+import cv2
+class WebcamVideoStream:
+	def __init__(self, src=0):
+		# initialize the video camera stream and read the first frame
+		# from the stream
+		self.stream = cv2.VideoCapture(src)
+		(self.grabbed, self.frame) = self.stream.read()
+		# initialize the variable used to indicate if the thread should
+		# be stopped
+		self.stopped = False
+def start(self):
+	# start the thread to read frames from the video stream
+	Thread(target=self.update, args=()).start()
+	return self
+def update(self):
+	# keep looping infinitely until the thread is stopped
+	while True:
+		# if the thread indicator variable is set, stop the thread
+		if self.stopped:
+			return
+		# otherwise, read the next frame from the stream
+		(self.grabbed, self.frame) = self.stream.read()
+def read(self):
+	# return the frame most recently read
+	return self.frame
+def stop(self):
+	# indicate that the thread should be stopped
+	self.stopped = True
+'''
+__init__(self, src=0): Sınıfın başlatıcı (constructor) metotu. Bu metot, bir video kamera akışını başlatır ve ilk kareyi okur. src parametresi, kullanılacak olan kamera kaynağını belirtir (varsayılan olarak 0, yani bilgisayarın varsayılan kamera kaynağı).
+
+start(self): Bu metot, iş parçacığı (thread) kullanarak kamera akışından kareleri okumak için bir iş parçacığı başlatır. Bu iş parçacığı, update metoduyla aynı anda çalışır.
+
+update(self): Bu metot, iş parçacığının ana gövdesini oluşturur. Sürekli bir döngü içinde, eğer self.stopped değeri True ise iş parçacığını sonlandırır. Aksi takdirde, bir sonraki kareyi kamera akışından okur ve self.frame ile self.grabbed değerlerini günceller.
+
+read(self): Bu metot, en son okunan kareyi döndürür.
+
+stop(self): Bu metot, iş parçacığının durmasını sağlar. self.stopped değeri True olarak ayarlanır, bu da iş parçacığının sona ermesine neden olur.
+'''
