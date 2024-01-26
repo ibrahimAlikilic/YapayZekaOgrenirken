@@ -1,0 +1,21 @@
+    "show_video": true: Görüntüyü ekranda gösterme özelliğini etkinleştirme. true olduğunda, yakalanan görüntüyü ekranda gösterir.
+
+    "use_dropbox": true: Dropbox entegrasyonunu etkinleştirme. true olduğunda, görüntülerin Dropbox'a yüklenmesini sağlar.
+
+    "dropbox_access_token": "YOUR_DROPBOX_KEY": Dropbox API erişim belirteci. Dropbox entegrasyonu kullanılacaksa, bu belirteç gereklidir.
+
+    "dropbox_base_path": "YOUR_DROPBOX_PATH": Dropbox'ta görüntülerin yükleneceği temel dizin. Bu, Dropbox hesabınızdaki bir dizini temsil eder.
+
+    "min_upload_seconds": 3.0: Dropbox'a yükleme aralığı (saniye cinsinden). Yani, her iki yükleme arasında en az 3 saniye olmalıdır.
+
+    "min_motion_frames": 8: Algılanan hareketin kabul edilebilmesi için gereken minimum kare sayısı.
+
+    "camera_warmup_time": 2.5: Kameranın hazırlanma süresi (saniye cinsinden). Başlamadan önce kamera için bekleme süresidir.
+
+    "delta_thresh": 5: Hareket algılaması için kullanılan eşik değeri. Bu değer, ardışık kareler arasındaki piksel değerlerindeki değişiklik miktarını belirler.
+
+    "resolution": [640, 480]: Kamera çözünürlüğü. Bu durumda, 640x480 piksel olarak ayarlanmıştır.
+
+    "fps": 16: Kamera çerçeve hızı (kare/saniye). Kamera, saniyede 16 kare yakalayacak şekilde ayarlanmıştır.
+
+    "min_area": 5000: Hareket algılaması için kabul edilebilir minimum alan. Algılanan hareketin bu alandan büyük olması gerekmektedir.
