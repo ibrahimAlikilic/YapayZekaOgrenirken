@@ -1,0 +1,4 @@
+Adım #1: LCD'yi termostat üzerinde konumlandırın. Plastik kabuk ile LCD arasında yeterli kontrast olduğundan bu, kenar algılama kullanılarak yapılabilir.
+Adım #2: LCD'yi çıkarın. Bir giriş kenar haritası verildiğinde konturları bulabilirim ve dikdörtgen şekilli ana hatları arayabilirim; en büyük dikdörtgen bölge LCD'ye karşılık gelmelidir. Perspektif dönüşümü bana LCD'nin güzel bir görüntüsünü verecektir.
+Adım #3: Rakam bölgelerini çıkarın. LCD'nin kendisine sahip olduğumda rakamları çıkarmaya odaklanabilirim. Rakam bölgeleri ile LCD'nin arka planı arasında kontrast olduğu görüldüğünden, eşikleme ve morfolojik işlemlerin bunu başarabileceğinden eminim.
+Adım #4: Rakamları tanımlayın. OpenCV ile gerçek rakamların tanınması, rakam ROI'sinin yedi bölüme bölünmesini içerecektir. Buradan belirli bir segmentin "açık" mı yoksa "kapalı" mı olduğunu belirlemek için eşikli görüntüye piksel sayımı uygulayabilirim.
