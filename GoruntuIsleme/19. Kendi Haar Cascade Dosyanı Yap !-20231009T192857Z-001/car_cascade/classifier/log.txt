@@ -1,0 +1,17 @@
+**************************************************
+*************** CREATING SAMPLES *****************
+**************************************************
+Object : C:/Users/ibo_m/OneDrive/Masaüstü/Yapay Zeka/Görüntü işleme/19. Kendi Haar Cascade Dosyanı Yap !-20231009T192857Z-001/car_cascade
+Fixing file names in negative images folder.
+Fixing file names in positive images folder.
+Creating negative list C:/Users/ibo_m/OneDrive/Masaüstü/Yapay Zeka/Görüntü işleme/19. Kendi Haar Cascade Dosyanı Yap !-20231009T192857Z-001/car_cascade/neg.lst
+Creating positive list C:/Users/ibo_m/OneDrive/Masaüstü/Yapay Zeka/Görüntü işleme/19. Kendi Haar Cascade Dosyanı Yap !-20231009T192857Z-001/car_cascade/pos.lst
+Running : opencv_createsamples
+OpenCV Error: Assertion failed (ssize.width > 0 && ssize.height > 0) in cv::resize, file D:\cv\opencv_3.2.0\sources_withTextModule\modules\imgproc\src\imgwarp.cpp, line 3492
+
+**************************************************
+************* TRAINING CLASSIFIER ****************
+**************************************************
+Running : opencv_traincascade
+OpenCV Error: Parsing error (wrong file format for C:\Users\ibo_m\OneDrive\Masa�st�\Yapay Zeka\G�r�nt� i�leme\19. Kendi Haar Cascade Dosyan� Yap !-20231009T192857Z-001\car_cascade\pos_samples.vec
+) in CvCascadeImageReader::PosReader::create, file D:\cv\opencv_3.2.0\sources_withTextModule\apps\traincascade\imagestorage.cpp, line 141
