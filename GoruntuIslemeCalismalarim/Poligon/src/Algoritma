@@ -1,0 +1,8 @@
+1) resimlerde kaç puan toplandığını tespit et
+2) puan durumunu her resmin üzerine yaz
+3) resimleri video haline getir
+
+
+1) Resimdeki çemberlerin tespit et ve çizdir.
+    Gürültüleri tamizlemem lazım
+2) isabet edilmiş noktanın tespiti ve hangi değerler arasında olduğu ( bunu çemberin yarıçağı ve noktanın koordinatından yola çıkarak buldurabilirsin )
