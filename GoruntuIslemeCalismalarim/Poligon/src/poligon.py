@@ -12,9 +12,11 @@ img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 # Blur
 img_blurred = cv2.GaussianBlur(img_gray, (15, 15), 0)
+blurredCopy=img_blurred.copy()
 
 # Threshold
 thresh = cv2.adaptiveThreshold(img_blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+threshCopy=thresh.copy()
 
 # Morfolojik işlemler
 kernel = np.ones((3, 3), np.uint8)
@@ -27,27 +29,31 @@ morph_img2 = cv2.morphologyEx(morph_img2, cv2.MORPH_OPEN, kernel, iterations=3)
 morph_img3 = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=2)
 morph_img3 = cv2.morphologyEx(morph_img3, cv2.MORPH_OPEN, kernel, iterations=2)
 
+morph_img5 = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=2)
+morph_img5 = cv2.morphologyEx(morph_img5, cv2.MORPH_OPEN, kernel, iterations=2)
+
 #####################################
 
 # Çember tespiti
 # Tümünü tespit edip ardından noktaları tespit edip hangi aralıkta olduğuna bakacağım .
+
+def contourCizim(circles,b,g,r):
+    if circles is not None:
+        circles = np.uint16(np.around(circles))
+        for i in circles[0, :]:
+            cv2.circle(img, (i[0], i[1]), i[2], (b,g,r), 3)
+
 circles1 = cv2.HoughCircles(morph_img1, cv2.HOUGH_GRADIENT, 1, minDist=50, param1=50, param2=30, minRadius=37, maxRadius=300)
-if circles1 is not None:
-    circles1 = np.uint16(np.around(circles1))
-    for i in circles1[0, :]:
-        cv2.circle(img, (i[0], i[1]), i[2], (0, 255, 0), 3)
-
+contourCizim(circles1,0,255,0)
 circles2 = cv2.HoughCircles(morph_img2, cv2.HOUGH_GRADIENT, 1, minDist=50, param1=50, param2=30, minRadius=37, maxRadius=300)
-if circles2 is not None:
-    circles2 = np.uint16(np.around(circles2))
-    for i in circles2[0, :]:
-        cv2.circle(img, (i[0], i[1]), i[2], (0, 0, 255), 3)
+contourCizim(circles2,0,0,255)
+circles3 = cv2.HoughCircles(morph_img3, cv2.HOUGH_GRADIENT, 1, minDist=50, param1=50, param2=30, minRadius=150, maxRadius=180)
+contourCizim(circles3,255,0,0)
 
-circles3 = cv2.HoughCircles(morph_img3, cv2.HOUGH_GRADIENT, 1, minDist=50, param1=50, param2=30, minRadius=250, maxRadius=300)
-if circles3 is not None:
-    circles3 = np.uint16(np.around(circles3))
-    for i in circles3[0, :]:
-        cv2.circle(img, (i[0], i[1]), i[2], (255, 0, 0), 3)
+circles5 = cv2.HoughCircles(blurredCopy, cv2.HOUGH_GRADIENT, 1, img.shape[0]/16, param1=50, param2=30, minRadius=280, maxRadius=290)
+contourCizim(circles5,25,120,100)
+
+
 
 
 # tamamını tespit ettikten sonra tespit edilen noktaların merkeze olan uzaklığı ile çemberlerin yarıçaplarını karşılaştırarak puanlamayı yaparsın.
