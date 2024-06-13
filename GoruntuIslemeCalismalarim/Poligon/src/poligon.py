@@ -45,12 +45,12 @@ def contourCizim(circles, b, g, r):
         for i in circles[0, :]:
             cv2.circle(img, (i[0], i[1]), i[2], (b, g, r), 3)
             cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
-            cv2.putText(img, f"Center: ({i[0]}, {i[1]})", (i[0] - 50, i[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-            cv2.putText(img, f"Radius: {i[2]}", (i[0] - 50, i[1] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-            cv2.line(img, (i[0], i[1]), (i[0] + i[2], i[1]), (255, 255, 255), 2)
+            cv2.putText(img, f"Center: ({i[0]}, {i[1]})", (i[0] - 50, i[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+            cv2.putText(img, f"Radius: {i[2]}", (i[0] - 50, i[1] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+            cv2.line(img, (i[0], i[1]), (i[0] + i[2], i[1]), (0, 0, 255), 2)
 
-circles = cv2.HoughCircles(result_mask, cv2.HOUGH_GRADIENT, 1, minDist=50, param1=50, param2=30, minRadius=20, maxRadius=200)
-contourCizim(circles, 0, 255, 0)
+circles1 = cv2.HoughCircles(result_mask, cv2.HOUGH_GRADIENT, 1, minDist=50, param1=50, param2=30, minRadius=250, maxRadius=300)
+contourCizim(circles1, 0, 255, 0)
 
 # Sonuçları göster
 cv2.imshow("Thresh", thresh)
