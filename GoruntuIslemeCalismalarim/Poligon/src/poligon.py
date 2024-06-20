@@ -40,17 +40,15 @@ result_mask = cv2.bitwise_and(combined_mask, thresh)
 #########################################################33
 # Çember tespiti ve çizim
 def contourCizim(circles, b, g, r):
-    if circles is not None:
-        circles = np.uint16(np.around(circles))
-        for i in circles[0, :]:
-            cv2.circle(img, (i[0], i[1]), i[2], (b, g, r), 3)
-            cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
-            cv2.putText(img, f"Center: ({i[0]}, {i[1]})", (i[0] - 50, i[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
-            cv2.putText(img, f"Radius: {i[2]}", (i[0] - 50, i[1] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
-            cv2.line(img, (i[0], i[1]), (i[0] + i[2], i[1]), (0, 0, 255), 2)
+    for i in range(len(circles)):
+        if hierarchy[0][i][3]==-1:
+           cv2.drawContours(img,circles,i,255,1)
+contours, hierarchy = cv2.findContours(result_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
-circles1 = cv2.HoughCircles(result_mask, cv2.HOUGH_GRADIENT, 1, minDist=50, param1=50, param2=30, minRadius=250, maxRadius=300)
-contourCizim(circles1, 0, 255, 0)
+contourCizim(contours, 0, 255, 0)
+print("circles1 : ")
+print(contours)
+
 
 # Sonuçları göster
 cv2.imshow("Thresh", thresh)
