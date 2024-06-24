@@ -65,8 +65,7 @@ print("merkez koordinatları (x,y) : ",center_x," ",center_y) # 311,296 geldi am
 ##########################################
 
 # Kontur noktalarının merkezden olan uzaklıklarını hesapla
-distances = []
-previous_distances = set() # daha önce yazılıp yazılmadığını bunun sayesinde kontrol ediyormuşuz ( set )
+distance_dict = {}
 
 for contour in contours:
     for point in contour:
@@ -74,10 +73,21 @@ for contour in contours:
         distance = int(math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2))  # Mesafeyi tam sayı olarak hesapla
         
         # Sadece mesafe daha önce hesaplanmadıysa yazdır
-        if distance not in previous_distances:
-            distances.append(distance)
-            print(f"Kontur noktası ({x}, {y}) - Merkeze uzaklık: {distance}")
-            previous_distances.add(distance)
+        if distance in distance_dict:
+            distance_dict[distance] += 1
+            '''
+            * Bu satır, distance_dict sözlüğünde distance anahtarına karşılık gelen değeri 1 artırır.
+            * Bu, distance değeri daha önce hesaplanmış ve sözlüğe eklenmişse, bu mesafeyi tekrar bulduğumuzu ifade eder ve sayacını artırır.
+            '''
+        else:
+            distance_dict[distance] = 1 # Bu satır, distance_dict sözlüğüne yeni bir distance anahtarı ekler ve değerini 1 olarak ayarlar.
+
+# Sözlüğü küçükten büyüğe sırala
+sorted_distances = dict(sorted(distance_dict.items()))
+
+# Sıralanmış mesafeleri ve sayılarını yazdır
+for distance, count in sorted_distances.items():
+    print(f"Uzaklık: {distance}, Sayı: {count}")
 
 
 
