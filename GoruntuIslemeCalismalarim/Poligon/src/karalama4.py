@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import math
 
 # Resmi yükle
 image_path = 'input/2.png'
@@ -26,6 +25,12 @@ lower_black = np.array([0, 0, 0])
 upper_black = np.array([180, 255, 30])
 mask = cv2.inRange(img_hsv, lower_black, upper_black)
 
+# hedef için
+img_hsv_hedef = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+lower_hedef = np.array([0, 0, 1])
+upper_hedef = np.array([179, 0, 1])
+mask_hedef = cv2.inRange(img_hsv_hedef, lower_hedef, upper_hedef)
+
 # Morfolojik işlemler
 kernel = np.ones((3, 3), np.uint8)
 morph_img = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=3)
@@ -47,53 +52,12 @@ def contourCizim(circles, b, g, r):
         if hierarchy[0][i][3]==-1:
            cv2.drawContours(img,circles,i,255,1)
 contours, hierarchy = cv2.findContours(result_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-
 contourCizim(contours, 0, 255, 0)
+
+contoursHedef=cv2.HoughCircles(mask_hedef, cv2.HOUGH_GRADIENT, 1, minDist=50, param1=50, param2=30, minRadius=20, maxRadius=100)
+contourCizim(contoursHedef, 255, 0, 0)
 print("circles1 : ")
-print(contours) # ilk elemna x 2. eleman y
-
-## Şimdi merkez koordinatları tespit edeceğiz
-# Resmin boyutlarını al
-height, width = img.shape[:2]
-
-# Merkez koordinatlarını hesapla
-center_x = width // 2
-center_y = height // 2
-center_x=296
-print("merkez koordinatları (x,y) : ",center_x," ",center_y) # 311,296 geldi ama fotoğrafa dikkatli baktığımız zaman poligonun tam olarak ortalanmadığı belli ve biz de merkeze olan uzaklıktan gideceğimizden x= 296 kabul edeceğim
-
-##########################################
-
-# Kontur noktalarının merkezden olan uzaklıklarını hesapla
-distance_dict = {}
-for contour in contours:
-    for point in contour:
-        x, y = point[0]
-        distance = int(math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2))  # Mesafeyi tam sayı olarak hesapla
-        # Sadece mesafe daha önce hesaplanmadıysa yazdır
-        if distance in distance_dict:
-            distance_dict[distance] += 1
-            '''
-            * Bu satır, distance_dict sözlüğünde distance anahtarına karşılık gelen değeri 1 artırır.
-            * Bu, distance değeri daha önce hesaplanmış ve sözlüğe eklenmişse, bu mesafeyi tekrar bulduğumuzu ifade eder ve sayacını artırır.
-            '''
-        else:
-            distance_dict[distance] = 1 # Bu satır, distance_dict sözlüğüne yeni bir distance anahtarı ekler ve değerini 1 olarak ayarlar.
-
-# Sözlüğü küçükten büyüğe sırala
-sorted_distances = dict(sorted(distance_dict.items()))
-
-contours_sayisi=0
-
-# Sıralanmış mesafeleri ve sayılarını yazdır
-for distance, count in sorted_distances.items():
-    if count<10:
-        pass
-    else:
-        contours_sayisi+=1
-        print(f"Uzaklık: {distance}, Sayı: {count}")
-print("Toplam okunan adet sayisi 10a esit ve cok olan contour sayisi : ",contours_sayisi)
-
+print(contoursHedef)
 
 
 # Sonuçları göster
@@ -103,5 +67,6 @@ cv2.imshow("Mask", mask)
 cv2.imshow("Combined Mask", combined_mask)
 cv2.imshow("Result Mask", result_mask)
 cv2.imshow("Orijinal", img)
+cv2.imshow("mask_hedef", mask_hedef)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

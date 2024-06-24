@@ -1,3 +1,7 @@
+######## vurmuş olan kısmı algılamam lazım ##############
+
+
+
 import cv2
 import numpy as np
 
@@ -19,11 +23,18 @@ img_blurred = cv2.GaussianBlur(img_gray, (15, 15), 0)
 ret,thresh=cv2.threshold(img_blurred,200,255,cv2.THRESH_BINARY) 
 
 # Siyah rengi tespit et . Bu sayede daha net çıktı alıyorum . 
-# Amacım lekeleri temizleyip ana çemberleri bulmak olduğundan bunun faydalıolabileceğini düşünüp denedim ve oldu 
+## Amacım lekeleri temizleyip ana çemberleri bulmak olduğundan bunun faydalıolabileceğini düşünüp denedim ve oldu 
 img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+# poligonun ana hatlarını belirlemek için siyah
 lower_black = np.array([0, 0, 0])
 upper_black = np.array([180, 255, 30])
+# poligonun gri kısımlarını belirlemek için
+lower_gray = np.array([0, 0, 100])
+upper_gray = np.array([180, 50, 255])
+
+
 mask = cv2.inRange(img_hsv, lower_black, upper_black)
+maskGray = cv2.inRange(img_hsv, lower_gray, upper_gray)
 
 # Morfolojik işlemler
 kernel = np.ones((3, 3), np.uint8)
@@ -35,8 +46,11 @@ morph_img = cv2.morphologyEx(morph_img, cv2.MORPH_OPEN, kernel, iterations=3)
 # Maskeyi ve morfolojik işlemden geçen görüntüyü birleştir
 combined_mask = cv2.bitwise_or(mask, morph_img)
 
-# Sonuç maskesi
+## Sonuç maskesi
+# Ana hatlar
 result_mask = cv2.bitwise_and(combined_mask, thresh)
+# isabet edilmiş bölge
+result = cv2.bitwise_and(img, img, mask=maskGray)
 
 #########################################################
 
@@ -46,8 +60,10 @@ def contourCizim(circles, b, g, r):
         if hierarchy[0][i][3]==-1:
            cv2.drawContours(img,circles,i,255,1)
 contours, hierarchy = cv2.findContours(result_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+contours_isabet, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 contourCizim(contours, 0, 255, 0)
+contourCizim(contours_isabet, 255, 0, 0)
 print("circles1 : ")
 print(contours)
 
