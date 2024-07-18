@@ -82,17 +82,23 @@ for contour in contours:
 
 # Sözlüğü küçükten büyüğe sırala
 sorted_distances = dict(sorted(distance_dict.items()))
-
 contours_sayisi=0
-
-# Sıralanmış mesafeleri ve sayılarını yazdır
 for distance, count in sorted_distances.items():
     if count<10:
         pass
     else:
         contours_sayisi+=1
         print(f"Uzaklık: {distance}, Sayı: {count}")
-print("Toplam okunan adet sayisi 10a esit ve cok olan contour sayisi : ",contours_sayisi)
+# aşağıdaki döngü çevrenin noktalardan oluşmasından yola çıkarak oluşturulup r nin bulunması sağlanmıştır input kısmında "ispat.png" adında nasıl hesaplandığı gösterilmiştir. 
+toplamCount=0
+for distance, count in sorted_distances.items():
+    if count<10:
+        pass
+    else:
+        toplamCount+=count
+pi=math.pi
+r=toplamCount/(pi*30)
+print(f"r = {r}")
 
 
 

@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import math
 
 # Resmi yükle
 image_path = 'input/2.png'
@@ -49,7 +50,56 @@ contours, hierarchy = cv2.findContours(result_mask, cv2.RETR_CCOMP, cv2.CHAIN_AP
 
 contourCizim(contours, 0, 255, 0)
 print("circles1 : ")
-print(contours)
+print(contours) # ilk elemna x 2. eleman y
+
+## Şimdi merkez koordinatları tespit edeceğiz
+# Resmin boyutlarını al
+height, width = img.shape[:2]
+
+# Merkez koordinatlarını hesapla
+center_x = width // 2
+center_y = height // 2
+center_x=296
+print("merkez koordinatları (x,y) : ",center_x," ",center_y) # 311,296 geldi ama fotoğrafa dikkatli baktığımız zaman poligonun tam olarak ortalanmadığı belli ve biz de merkeze olan uzaklıktan gideceğimizden x= 296 kabul edeceğim
+
+##########################################
+
+# Kontur noktalarının merkezden olan uzaklıklarını hesapla
+distance_dict = {}
+for contour in contours:
+    for point in contour:
+        x, y = point[0]
+        distance = int(math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2))  # Mesafeyi tam sayı olarak hesapla
+        # Sadece mesafe daha önce hesaplanmadıysa yazdır
+        if distance in distance_dict:
+            distance_dict[distance] += 1
+            '''
+            * Bu satır, distance_dict sözlüğünde distance anahtarına karşılık gelen değeri 1 artırır.
+            * Bu, distance değeri daha önce hesaplanmış ve sözlüğe eklenmişse, bu mesafeyi tekrar bulduğumuzu ifade eder ve sayacını artırır.
+            '''
+        else:
+            distance_dict[distance] = 1 # Bu satır, distance_dict sözlüğüne yeni bir distance anahtarı ekler ve değerini 1 olarak ayarlar.
+
+# Sözlüğü küçükten büyüğe sırala
+sorted_distances = dict(sorted(distance_dict.items()))
+contours_sayisi=0
+for distance, count in sorted_distances.items():
+    if count<10:
+        pass
+    else:
+        contours_sayisi+=1
+        print(f"Uzaklık: {distance}, Sayı: {count}")
+# aşağıdaki döngü çevrenin noktalardan oluşmasından yola çıkarak oluşturulup r nin bulunması sağlanmıştır input kısmında "ispat.png" adında nasıl hesaplandığı gösterilmiştir. 
+toplamCount=0
+for distance, count in sorted_distances.items():
+    if count<10:
+        pass
+    else:
+        toplamCount+=count
+pi=math.pi
+r=toplamCount/(pi*30)
+print(f"r = {r}")
+
 
 
 # Sonuçları göster
