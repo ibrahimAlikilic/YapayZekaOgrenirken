@@ -98,18 +98,58 @@ def cemberlerinTespiti(img):
     pi=math.pi
     r=toplamCount/(pi*30)
     # Sonuçları göster
-    cv2.imshow("Thresh", thresh)
-    cv2.imshow("Morfolojik", morph_img)
-    cv2.imshow("Mask", mask)
-    cv2.imshow("Combined Mask", combined_mask)
-    cv2.imshow("Result Mask", result_mask)
+    # cv2.imshow("Thresh", thresh)
+    # cv2.imshow("Morfolojik", morph_img)
+    # cv2.imshow("Mask", mask)
+    # cv2.imshow("Combined Mask", combined_mask)
+    # cv2.imshow("Result Mask", result_mask)
     return r
-r=cemberlerinTespiti(img)
+def isabetMerkezKoordinat(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (9, 9), 0)
+    _, threshold = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY_INV)
+    # Dilatasyon işlemi ekleyin
+    kernel = np.ones((3, 3), np.uint8)
+    dilated = cv2.dilate(threshold, kernel, iterations=2)
+
+    contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    #########################################################
+
+    max_contour_area = 500  
+
+
+    contour_centers = [] # Kontur merkez koordinatlarını tutmak için  dizi
+
+    # Bulunan contourların her birini dikdörtgen içerisine al
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        if area < max_contour_area:
+            x, y, w, h = cv2.boundingRect(contour)
+            cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+            # Merkez koordinatlarını hesapla
+            center_x = x + w // 2
+            center_y = y + h // 2
+            contour_centers.append((center_x, center_y))  # Merkez koordinatlarını diziye ekle
+            # Sonuçları göster
+            # cv2.imshow('Blurred Area', blurred)
+            # cv2.imshow('Threshold Area', threshold)
+            # cv2.imshow('Dilated Area', dilated)
+            # cv2.imshow('Detected Area', img)
+
+    return contour_centers
+img_cemberlerinTespiti=img.copy()
+r=cemberlerinTespiti(img_cemberlerinTespiti)
 print(f"r = {r}")
 #########################################################
 # Hedef tespit
-
-
+img_cisabetMerkezKoordinat=img.copy()
+contour_centers=isabetMerkezKoordinat(img_cisabetMerkezKoordinat)
+# Kontur merkez koordinatlarını yazdır
+print("Kontur Merkez Koordinatları:")
+for center in contour_centers:
+    print(center)
 
 # Sonuçları göster
 cv2.imshow("Orijinal", img)
