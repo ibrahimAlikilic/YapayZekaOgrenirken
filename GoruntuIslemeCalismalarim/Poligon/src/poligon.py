@@ -7,7 +7,21 @@ image_path = 'input/2.png'
 img = cv2.imread(image_path)
 if img is None:
     raise FileNotFoundError("Görüntü dosyası bulunamadı. Lütfen dosya yolunu kontrol edin.")
+
 #########################################################
+
+## Şimdi merkez koordinatları tespit edeceğiz
+# Resmin boyutlarını al
+height, width = img.shape[:2]
+
+# Merkez koordinatlarını hesapla
+center_x = width // 2
+center_y = height // 2
+center_x=296
+print("merkez koordinatları (x,y) : ",center_x," ",center_y) # 311,296 geldi ama fotoğrafa dikkatli baktığımız zaman poligonun tam olarak ortalanmadığı belli ve biz de merkeze olan uzaklıktan gideceğimizden x= 296 kabul edeceğim
+
+#########################################################
+
 def cemberlerinTespiti(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Gürültü azaltma
@@ -51,16 +65,7 @@ def cemberlerinTespiti(img):
     print("circles1 : ")
     print(contours) # ilk elemna x 2. eleman y
 
-    ## Şimdi merkez koordinatları tespit edeceğiz
-    # Resmin boyutlarını al
-    height, width = img.shape[:2]
-
-    # Merkez koordinatlarını hesapla
-    center_x = width // 2
-    center_y = height // 2
-    center_x=296
-    print("merkez koordinatları (x,y) : ",center_x," ",center_y) # 311,296 geldi ama fotoğrafa dikkatli baktığımız zaman poligonun tam olarak ortalanmadığı belli ve biz de merkeze olan uzaklıktan gideceğimizden x= 296 kabul edeceğim
-
+    
     ##########################################
 
     # Kontur noktalarının merkezden olan uzaklıklarını hesapla
@@ -104,6 +109,9 @@ def cemberlerinTespiti(img):
     # cv2.imshow("Combined Mask", combined_mask)
     # cv2.imshow("Result Mask", result_mask)
     return r
+
+#########################################################
+
 def isabetMerkezKoordinat(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (9, 9), 0)
@@ -136,20 +144,43 @@ def isabetMerkezKoordinat(img):
             # cv2.imshow('Blurred Area', blurred)
             # cv2.imshow('Threshold Area', threshold)
             # cv2.imshow('Dilated Area', dilated)
-            # cv2.imshow('Detected Area', img)
+            cv2.imshow('Detected Area', img)
 
     return contour_centers
+
+#########################################################
+
+merkezeOlanUzakliklar=[]
+def MerkezeOlanUzaklikFonksiyonu(contour_centers):
+    for center in contour_centers:
+        farklarinKaresi=((center[0]-center_x)**2) + ((center[1]-center_y)**2)
+        merkezUzaklik=math.sqrt(farklarinKaresi)
+        merkezeOlanUzakliklar.append(merkezUzaklik)
+
+#########################################################
+
+# Çemberleri tespit et
 img_cemberlerinTespiti=img.copy()
 r=cemberlerinTespiti(img_cemberlerinTespiti)
 print(f"r = {r}")
+
 #########################################################
-# Hedef tespit
+
+# Hedefleri tespit et
 img_cisabetMerkezKoordinat=img.copy()
-contour_centers=isabetMerkezKoordinat(img_cisabetMerkezKoordinat)
+contour_centers=isabetMerkezKoordinat(img_cisabetMerkezKoordinat) # (x,y) olarak değer dönüyor
+'''
 # Kontur merkez koordinatlarını yazdır
 print("Kontur Merkez Koordinatları:")
 for center in contour_centers:
     print(center)
+'''
+
+#########################################################
+
+# Merkez koordinatları hesapla
+MerkezeOlanUzaklikFonksiyonu(contour_centers)
+
 
 # Sonuçları göster
 cv2.imshow("Orijinal", img)
