@@ -150,13 +150,28 @@ def isabetMerkezKoordinat(img):
 
 #########################################################
 
-merkezeOlanUzakliklar=[]
 def MerkezeOlanUzaklikFonksiyonu(contour_centers):
     for center in contour_centers:
         farklarinKaresi=((center[0]-center_x)**2) + ((center[1]-center_y)**2)
         merkezUzaklik=math.sqrt(farklarinKaresi)
-        merkezeOlanUzakliklar.append(merkezUzaklik)
+        return merkezUzaklik
 
+#########################################################
+
+def PanHesapla(r,contour_centers):
+    if(contour_centers<=r):
+        return 1
+    elif(contour_centers<=r*2):
+        return 2 
+    elif(contour_centers<=r*3):
+        return 3
+    elif(contour_centers<=r*4):
+        return 4 
+    elif(contour_centers<=r*5):
+        return 5 
+    else:
+        return 0
+    
 #########################################################
 
 # Çemberleri tespit et
@@ -178,9 +193,13 @@ for center in contour_centers:
 
 #########################################################
 
-# Merkez koordinatları hesapla
-MerkezeOlanUzaklikFonksiyonu(contour_centers)
+# Merkeze olanuzaklık hesapla
+merkezUzaklik=MerkezeOlanUzaklikFonksiyonu(contour_centers)
 
+#########################################################
+
+# Puan hesapla
+puan=PanHesapla(r,contour_centers)
 
 # Sonuçları göster
 cv2.imshow("Orijinal", img)
