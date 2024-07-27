@@ -158,16 +158,16 @@ def MerkezeOlanUzaklikFonksiyonu(contour_centers):
 
 #########################################################
 
-def PanHesapla(r,contour_centers):
-    if(contour_centers<=r):
+def PanHesapla(r,merkezUzaklik):
+    if(merkezUzaklik<=r):
         return 1
-    elif(contour_centers<=r*2):
+    elif(merkezUzaklik<=r*2):
         return 2 
-    elif(contour_centers<=r*3):
+    elif(merkezUzaklik<=r*3):
         return 3
-    elif(contour_centers<=r*4):
+    elif(merkezUzaklik<=r*4):
         return 4 
-    elif(contour_centers<=r*5):
+    elif(merkezUzaklik<=r*5):
         return 5 
     else:
         return 0
@@ -199,7 +199,8 @@ merkezUzaklik=MerkezeOlanUzaklikFonksiyonu(contour_centers)
 #########################################################
 
 # Puan hesapla
-puan=PanHesapla(r,contour_centers)
+puan=PanHesapla(r,merkezUzaklik)
+print(f"puan : {puan}")
 
 # Sonuçları göster
 cv2.imshow("Orijinal", img)
