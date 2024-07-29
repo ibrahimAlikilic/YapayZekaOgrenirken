@@ -18,7 +18,7 @@ height, width = img.shape[:2]
 center_x = width // 2
 center_y = height // 2
 center_x=296
-print("merkez koordinatları (x,y) : ",center_x," ",center_y) # 311,296 geldi ama fotoğrafa dikkatli baktığımız zaman poligonun tam olarak ortalanmadığı belli ve biz de merkeze olan uzaklıktan gideceğimizden x= 296 kabul edeceğim
+# print("merkez koordinatları (x,y) : ",center_x," ",center_y) # 311,296 geldi ama fotoğrafa dikkatli baktığımız zaman poligonun tam olarak ortalanmadığı belli ve biz de merkeze olan uzaklıktan gideceğimizden x= 296 kabul edeceğim
 
 #########################################################
 
@@ -62,8 +62,8 @@ def cemberlerinTespiti(img):
     contours, hierarchy = cv2.findContours(result_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
     contourCizim(contours, 0, 255, 0)
-    print("circles1 : ")
-    print(contours) # ilk elemna x 2. eleman y
+    # print("circles1 : ")
+    # print(contours) # ilk elemna x 2. eleman y
 
     
     ##########################################
@@ -92,7 +92,7 @@ def cemberlerinTespiti(img):
             pass
         else:
             contours_sayisi+=1
-            print(f"Uzaklık: {distance}, Sayı: {count}")
+            # print(f"Uzaklık: {distance}, Sayı: {count}")
     # aşağıdaki döngü çevrenin noktalardan oluşmasından yola çıkarak oluşturulup r nin bulunması sağlanmıştır input kısmında "ispat.png" adında nasıl hesaplandığı gösterilmiştir. 
     toplamCount=0
     for distance, count in sorted_distances.items():
@@ -151,26 +151,37 @@ def isabetMerkezKoordinat(img):
 #########################################################
 
 def MerkezeOlanUzaklikFonksiyonu(contour_centers):
+    merkezUzaklik=[]
     for center in contour_centers:
         farklarinKaresi=((center[0]-center_x)**2) + ((center[1]-center_y)**2)
-        merkezUzaklik=math.sqrt(farklarinKaresi)
-        return merkezUzaklik
+        merkezUzaklik.append(math.sqrt(farklarinKaresi))
+    return merkezUzaklik
 
 #########################################################
 
-def PanHesapla(r,merkezUzaklik):
-    if(merkezUzaklik<=r):
-        return 1
-    elif(merkezUzaklik<=r*2):
-        return 2 
-    elif(merkezUzaklik<=r*3):
-        return 3
-    elif(merkezUzaklik<=r*4):
-        return 4 
-    elif(merkezUzaklik<=r*5):
-        return 5 
+def PanHesapla(r, merkezUzaklik):
+    def hesaplaTekDeger(deger):
+        if deger <= r:
+            return 1
+        elif deger <= r * 2:
+            return 2 
+        elif deger <= r * 3:
+            return 3
+        elif deger <= r * 4:
+            return 4 
+        elif deger <= r * 5:
+            return 5 
+        else:
+            return 0
+    
+    # Eğer 'merkezUzaklik' bir liste ise ve eleman sayısı 1'den büyükse
+    if isinstance(merkezUzaklik, list) and len(merkezUzaklik) > 1:
+        # Listedeki her değeri 'hesaplaTekDeger' fonksiyonuyla işleyip, sonuçları toplar
+        toplam_puanlar = sum(hesaplaTekDeger(deger) for deger in merkezUzaklik)
+        return toplam_puanlar
     else:
-        return 0
+        # Eğer 'merkezUzaklik' tek bir değer ise, 'hesaplaTekDeger' fonksiyonunu kullanarak sonucu döner
+        return hesaplaTekDeger(merkezUzaklik[0])
     
 #########################################################
 
@@ -192,7 +203,7 @@ def FarkiBul(img1_path,img2_path):
     # Farklı kısımları bulmak için kontur tespiti yapın
     contours, _ = cv2.findContours(thresh_diff, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    # Farklı kısımları kare içine alın
+    # Farklı kısımları bul ve geri döndür
     coordinations=[]
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
