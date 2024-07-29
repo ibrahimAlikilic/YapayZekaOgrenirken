@@ -219,7 +219,7 @@ def FarkiBul(img1_path,img2_path):
 # Çemberleri tespit et
 img_cemberlerinTespiti=img.copy()
 r=cemberlerinTespiti(img_cemberlerinTespiti)
-r=r+1 # bunu yapmamın sebebi tahminimce virgülden sonrasından dolayı ya da fotoğrafların sağ kısmında olan boşluktan dolayı yarıçapta 1br hatalı bulunmuş burada onu ekledim
+r=r+1 # tahminimce puan yazılarını da contours olarak algıladığından yarıçapı yaklaşık 1 br eksik buldu o yüzden ekleme yaptım
 print(f"r = {r}")
 
 #########################################################
