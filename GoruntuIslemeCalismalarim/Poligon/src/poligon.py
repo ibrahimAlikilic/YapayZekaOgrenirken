@@ -219,6 +219,7 @@ def FarkiBul(img1_path,img2_path):
 # Çemberleri tespit et
 img_cemberlerinTespiti=img.copy()
 r=cemberlerinTespiti(img_cemberlerinTespiti)
+r=r+1 # bunu yapmamın sebebi tahminimce virgülden sonrasından dolayı ya da fotoğrafların sağ kısmında olan boşluktan dolayı yarıçapta 1br hatalı bulunmuş burada onu ekledim
 print(f"r = {r}")
 
 #########################################################
@@ -249,8 +250,8 @@ for i in range(len(image_paths) - 1):
     merkezUzaklik=MerkezeOlanUzaklikFonksiyonu(coordinations)
     # Puan hesapla
     puan=PanHesapla(r,merkezUzaklik)
+    print(f"{i+1}. ve {i+2}. resim inceleme sonucu hesaplanan puan : {puan}")
     toplam+=puan
-    print(f"puan : {puan}")
 
 #########################################################
 
