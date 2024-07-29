@@ -1,3 +1,3 @@
 1) Poligonun çemberlerini tespit et
 2) Yarıçap hesapla
-3) 2 fotoğraf arasındaki farkı bul ve kaç puana tekamül ettiğini hesaplat
+3) 2 fotoğraf arasındaki farkı bul (bitwise_xor ile) ve kaç puana tekamül ettiğini hesaplat
