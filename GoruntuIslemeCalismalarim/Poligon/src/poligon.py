@@ -3,8 +3,8 @@ import numpy as np
 import math
 
 # Resmi yükle
-image_path = 'input/2.png'
-img = cv2.imread(image_path)
+image_paths = ["input/1.png","input/2.png","input/3.png","input/4.png","input/5.png"]
+img = cv2.imread(image_paths[0]) # bunu ilk başta almamın sebebi poligonun yarıçapını bulabilmek.
 if img is None:
     raise FileNotFoundError("Görüntü dosyası bulunamadı. Lütfen dosya yolunu kontrol edin.")
 
@@ -174,6 +174,37 @@ def PanHesapla(r,merkezUzaklik):
     
 #########################################################
 
+# 2 Resim arasındaki farkı bulma
+def FarkiBul(img1_path,img2_path):
+    img1 = cv2.imread(img1_path)
+    img2 = cv2.imread(img2_path)
+    # Resimleri aynı boyuta getirin
+    height, width = img1.shape[:2]
+    img2_resized = cv2.resize(img2, (width, height))
+    
+    # bitwise_xor işlemi ile farkı bulun
+    difference = cv2.bitwise_xor(img1, img2_resized)
+    
+    # Farklı kısımları tespit etmek için gri tonlamalı ve eşikleme yapın
+    gray_diff = cv2.cvtColor(difference, cv2.COLOR_BGR2GRAY)
+    _, thresh_diff = cv2.threshold(gray_diff, 30, 255, cv2.THRESH_BINARY)
+    
+    # Farklı kısımları bulmak için kontur tespiti yapın
+    contours, _ = cv2.findContours(thresh_diff, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # Farklı kısımları kare içine alın
+    coordinations=[]
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        cv2.rectangle(img1, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # Merkez koordinatlarını hesapla
+        center_x = x + w // 2
+        center_y = y + h // 2
+        coordinations.append((center_x, center_y))
+    return coordinations # bunu döndürerek her seferinde farklı bulmuş olduğumuz kısmın merkezinin koordinatlarını geri döndürmüş oluyorum
+
+#########################################################
+
 # Çemberleri tespit et
 img_cemberlerinTespiti=img.copy()
 r=cemberlerinTespiti(img_cemberlerinTespiti)
@@ -181,9 +212,13 @@ print(f"r = {r}")
 
 #########################################################
 
+""" 
+ilk başta tespit etmek istediğim için gerekmişti lakin şimdi 2 resim arasındaki farktan bulduğumdan gerek kalmadı
+
 # Hedefleri tespit et
 img_cisabetMerkezKoordinat=img.copy()
 contour_centers=isabetMerkezKoordinat(img_cisabetMerkezKoordinat) # (x,y) olarak değer dönüyor
+
 '''
 # Kontur merkez koordinatlarını yazdır
 print("Kontur Merkez Koordinatları:")
@@ -191,18 +226,21 @@ for center in contour_centers:
     print(center)
 '''
 
-#########################################################
-
-# Merkeze olanuzaklık hesapla
-merkezUzaklik=MerkezeOlanUzaklikFonksiyonu(contour_centers)
+"""
 
 #########################################################
 
-# Puan hesapla
-puan=PanHesapla(r,merkezUzaklik)
-print(f"puan : {puan}")
+# Resimler arasındaki farktan ve uzaklıktan puan hesaplama
+toplam=0
+for i in range(len(image_paths) - 1):
+    coordinations = FarkiBul(image_paths[i], image_paths[i + 1])
+    # Merkeze olanuzaklık hesapla
+    merkezUzaklik=MerkezeOlanUzaklikFonksiyonu(coordinations)
+    # Puan hesapla
+    puan=PanHesapla(r,merkezUzaklik)
+    toplam+=puan
+    print(f"puan : {puan}")
 
-# Sonuçları göster
-cv2.imshow("Orijinal", img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+#########################################################
+
+print(f"Toplam : {toplam}")
