@@ -53,15 +53,16 @@ def cemberlerinTespiti(img):
     result_mask = cv2.bitwise_and(combined_mask, thresh)
 
     #########################################################
-
+    """Tespit yaperken gerekiyordu artık ihtiyaç yok yorum satırı olarak durabilir
     # Çember tespiti ve çizim
     def contourCizim(circles, b, g, r):
         for i in range(len(circles)):
             if hierarchy[0][i][3]==-1:
                cv2.drawContours(img,circles,i,255,1)
+    """
     contours, hierarchy = cv2.findContours(result_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
-    contourCizim(contours, 0, 255, 0)
+    # contourCizim(contours, 0, 255, 0)
     # print("circles1 : ")
     # print(contours) # ilk elemna x 2. eleman y
 
