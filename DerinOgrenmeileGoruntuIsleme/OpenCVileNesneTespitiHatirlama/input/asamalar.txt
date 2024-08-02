@@ -1,0 +1,41 @@
+Adım 1: Gerekli Araçları ve Kütüphaneleri Yükle
+
+Öncelikle, gerekli araçları ve kütüphaneleri yüklemen gerekiyor. opencv ve opencv-data paketlerini kurman yeterli olacaktır:
+
+bash
+
+sudo apt-get update
+sudo apt-get install libopencv-dev python3-opencv
+
+Adım 2: Pozitif ve Negatif Görüntüleri Hazırla
+
+Pozitif görüntüler, tespit etmek istediğin nesneleri içeren görüntülerdir. Negatif görüntüler ise tespit etmek istemediğin nesneleri içeren görüntülerdir.
+
+    Pozitif Görüntüler: Bu görüntülerde nesnelerin bulunacağı ve annotasyon yapılacağı bir dizi görüntü olmalıdır.
+    Negatif Görüntüler: Bu görüntülerde nesnenin olmadığı çeşitli arka planlar olmalıdır.
+
+Adım 3: Pozitif Görüntüleri Annotasyon Yap
+
+Pozitif görüntülerdeki nesneleri annotasyon yaparak belirtmen gerekiyor. Bunun için opencv_annotation aracını kullanabilirsin.
+
+bash
+
+opencv_annotation --annotations=positives.txt --images=path_to_positive_images
+
+Adım 4: Pozitif Görüntü Vektör Dosyasını Oluştur
+
+Annotasyon yaptığın pozitif görüntülerden bir vektör dosyası oluşturman gerekiyor. Bunun için opencv_createsamples aracını kullanabilirsin.
+
+bash
+
+opencv_createsamples -info positives.txt -vec positives.vec -num 1000 -w 24 -h 24
+
+Adım 5: Haar Cascade Eğitimini Yap
+
+Son olarak, pozitif ve negatif görüntülerle Haar Cascade eğitimini gerçekleştireceksin. Bunun için opencv_traincascade aracını kullanacaksın.
+
+bash
+
+opencv_traincascade -data data -vec positives.vec -bg negatives.txt -numPos 1000 -numNeg 500 -numStages 20 -w 24 -h 24 -featureType HAAR
+
+Bu komutla eğitimi başlatacaksın. Eğitim süreci oldukça uzun sürebilir, bu nedenle sabırlı olmalısın.
