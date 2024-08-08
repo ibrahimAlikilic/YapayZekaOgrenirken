@@ -1,0 +1,43 @@
+1. Veri Hazırlama
+
+    Veri Yükleme: Görüntüleri belirli bir klasörden yükle.
+    Ön İşleme: Görüntüleri gri tonlamalıya çevir, yeniden boyutlandır ve normalleştir. Bu, veriyi modele uygun hale getirir.
+    Etiketleme: Etiketleri belirle ve bunları modelin işleyebileceği şekilde (örneğin, one-hot encoding) dönüştür.
+
+2. Veriyi Eğitim ve Test Setlerine Bölme
+
+    Train/Test Split: Veriyi eğitim ve test setlerine ayır. Bu adım, modelin performansını objektif olarak değerlendirebilmek için önemlidir.
+
+3. Modeli Oluşturma
+
+    Model Yapısı: Bir model nesnesi oluştur ve katmanları sırasıyla ekle.
+        Konvolüsyon Katmanları: Görüntü verilerindeki özellikleri öğren.
+        Havuzlama (Pooling): Veri boyutunu küçült ve önemli bilgileri koru.
+        Düzleştirme: Veri boyutunu yoğun (dense) katmanlara uygun hale getir.
+        Yoğun Katmanlar: Sınıflandırma yap.
+
+4. Modeli Derleme
+
+    Kayıp Fonksiyonu: Modelin tahmin hatalarını ölçmek için bir kayıp fonksiyonu seç (örneğin, categorical_crossentropy).
+    Optimizasyon: Ağırlıkları güncellemek için bir optimizasyon algoritması seç (örneğin, Adam).
+    Metriği Seçme: Modelin performansını değerlendirmek için bir metrik belirle (örneğin, accuracy).
+
+5. Modeli Eğitme
+
+    Eğitim: Modeli belirli sayıda epoch ve batch size ile eğit. Her epoch'ta model, eğitim setini kullanarak kendini iyileştirir.
+
+6. Modeli Değerlendirme
+
+    Eğitim/Test Doğruluğu: Eğitim ve test verileri üzerinde modelin doğruluğunu değerlendir. Bu, modelin ne kadar iyi öğrendiğini ve genel performansını gösterir.
+
+7. Modeli Kaydetme
+
+    Model ve Ağırlıkları Kaydet: Modelin yapısını ve ağırlıklarını dosyalara kaydet. Bu, daha sonra modeli yeniden yükleyip kullanabilmeni sağlar.
+
+Taslak Algoritma Fikrini Kavrama:
+
+    Adım Adım Yaklaş: Her adımın bir amacı var ve önceki adıma dayanır. Veri hazırlığı olmadan model eğitilemez, model derlenmeden eğitilemez, vs.
+    Modüler Düşün: Kodun her kısmı (örneğin veri hazırlama, model inşası) bağımsız birer modül gibi düşünülmeli.
+    Geliştirme ve Değerlendirme: Modelin nasıl eğitildiği kadar nasıl değerlendirildiği de önemlidir. Her iki aşama da döngüsel olabilir; yani modelin performansı düşükse geri dönüp veri hazırlama, model yapısını değiştirme gibi adımlara müdahale edebilirsin.
+
+Bu adımları ve düşünce yapısını kavradığında, benzer işlemleri farklı veri setleri ve projeler üzerinde de rahatlıkla uygulayabilirsin.
