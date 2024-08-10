@@ -22,4 +22,19 @@ images=[]
 classNo=[] # etiketimiz
 
 for i in range(noOfClasses): # noOfClasses uzunluğu kadar dön
-    myImageList=os.listdir(path+"//"+str(i)) # i dedik çünkü dosya adlarım zaten 0-10
+    myImageList=os.listdir(path+"//"+str(i)) # i dedik çünkü dosya adlarım zaten 0-10 ( i=label larım oldu +=classNO aşağıda yaptık. )
+    #şimdi klasörlerin içerisine girelim
+    for j in myImageList:
+        img=cv2.imread(path+"//"+str(i)+"//"+j)
+        # eğiteceğimiz nörel şeyin girdi boyutu 32X32 imiş o yüzden resize yapalım
+        img=cv2.resize(img,(32,32))
+        images.append(img)
+        classNo.append(i)
+print("images adet : ",len(images))
+print("classNo adet : ",len(classNo))
+
+# bundan sonra veriler numpy dizisi olarak lazım o yüzden dönüşüm yapalım
+images=np.array(images)
+classNo=np.array(classNo)
+print("images boyutu : ",images.shape)
+print("classNo boyutu : ",classNo.shape) # classNO vektör olduğunan 10160, şeklinde çıktı alıyoruz
