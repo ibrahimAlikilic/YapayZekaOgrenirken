@@ -26,7 +26,7 @@ key_down_pressed=False
 
 while True:
     img=sct.grab(mon) 
-    im=Image.frombytes("RGB",img.size,img.rgb)
+    im = Image.frombytes("RGB", img.size, img.rgb)
     im2=np.array(im.convert("L").resize((width,height)))
     im2=im2/255
     X=np.array([im2]) # bence im2 videoda im kullanmış çıktıya göre bakarsın
