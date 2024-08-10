@@ -11,4 +11,15 @@ from keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import pickle # modeli yüklemek için kullanacağız
 
-print("a")
+# verimizi inceledik baktık hepsi hemen hemen aynı boyutta e bu tanımayı azaltır bu yüzden zoom in-out yapacağız
+path="../input/myData"
+myList=os.listdir(path)
+noOfClasses=len(myList)
+print("Label sayısı : ",noOfClasses)
+
+
+images=[]
+classNo=[] # etiketimiz
+
+for i in range(noOfClasses): # noOfClasses uzunluğu kadar dön
+    myImageList=os.listdir(path+"//"+str(i)) # i dedik çünkü dosya adlarım zaten 0-10
