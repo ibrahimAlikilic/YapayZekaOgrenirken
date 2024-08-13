@@ -3,9 +3,11 @@ import cv2
 import os # veriyi içeri aktaracağız
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
+from sklearn.preprocessing import LabelEncoder
 import seaborn as sns # görselleştirme için
 import matplotlib.pyplot as plt
 from keras.models import Sequential
+from keras.layers import Input
 from tensorflow.keras import layers
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, BatchNormalization
 from keras.utils import to_categorical
@@ -122,26 +124,116 @@ noOfClasses=LabelSayisi(train_folder) # dosya var olduğunu bildiğimden 1 tanes
 #########################################################
 
 # Bazı verileri categorical hale getireceğiz, keras için bu gerekli
-y_train=to_categorical(y_train,noOfClasses)
-y_test=to_categorical(y_test,noOfClasses)
-y_validation=to_categorical(y_validation,noOfClasses)
+# Etiketleri sayısal değerlere dönüştürmek için LabelEncoder kullanıyoruz
+label_encoder = LabelEncoder()
+
+# String etiketleri sayısal değerlere çeviriyoruz
+y_train = label_encoder.fit_transform(y_train)
+y_test = label_encoder.transform(y_test)
+y_validation = label_encoder.transform(y_validation)
+
+# Categorical hale getirme
+y_train = to_categorical(y_train, noOfClasses)
+y_test = to_categorical(y_test, noOfClasses)
+y_validation = to_categorical(y_validation, noOfClasses)
 
 #########################################################
 
 # Modelimizi inşa etme aşamasına gelmiş bulunmaktayız
-model=Sequential()
-model.add(Conv2D(input_shape=(100,100,1),filters=8,kernel_size=(5,5),activation="relu",padding="same"))
+model = Sequential()
+model.add(Input(shape=(100,100,1)))
+model.add(Conv2D(filters=8, kernel_size=(5,5), activation="relu", padding="same"))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
-model.add(Conv2D(filters=16,kernel_size=(3,3),activation="relu",padding="same"))
+model.add(Conv2D(filters=16, kernel_size=(3,3), activation="relu", padding="same"))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
-model.add(Dropout(0.2))# ezberlemeyi engelliyoruz
-model.add(Flatten())
-model.add(Dense(units=256,activation="relu"))
 model.add(Dropout(0.2))
-model.add(Dense(units=noOfClasses,activation="softmax"))
+model.add(Flatten())
+model.add(Dense(units=256, activation="relu"))
+model.add(Dropout(0.2))
+model.add(Dense(units=noOfClasses, activation="softmax"))
 
 # modeli compile etmek için gerekli olan parametrelerimiz
 model.compile(loss="categorical_crossentropy",optimizer=("Adam"),metrics=["accuracy"])
 batch_size=250
+
+#########################################################
+
+# şimdi eğitim aşamasına geçiyoruz
+hist = model.fit(dataGen.flow(x_train, y_train, batch_size=batch_size),
+                 validation_data=(x_validation, y_validation),
+                 epochs=25, steps_per_epoch=x_train.shape[0] // batch_size,
+                 shuffle=True)
+
+#########################################################
+
+# Kayıt
+
+# Klasörün var olup olmadığını kontrol edin, yoksa oluşturun
+file_path = "../output"
+if not os.path.exists(file_path):
+    os.makedirs(file_path)
+
+# Modeli kaydedin
+with open(file_path + "/model_trained_new.p", "wb") as pickle_out:
+    pickle.dump(model, pickle_out)
+print("Model kaydedildi.")
+
+# Çıkan sonucumuzu görselleştirerek değerlendirelim
+
+# Eğitim süreci sırasında elde edilen metriklerin anahtarlarını görmek için
+print(hist.history.keys())
+
+# Eğitim ve doğrulama kayıp değerlerini çizmek için
+plt.figure()
+plt.plot(hist.history["loss"], label="Eğitim Loss")
+plt.plot(hist.history["val_loss"], label="Val Loss")
+plt.legend()
+plt.savefig(os.path.join(file_path, "loss_plot.png"))
+print("Loss Kaydedildi")
+plt.show()
+
+# Eğitim ve doğrulama doğruluk değerlerini çizmek için
+plt.figure()
+plt.plot(hist.history["accuracy"], label="Eğitim Accuracy")
+plt.plot(hist.history["val_accuracy"], label="Val Accuracy")
+plt.legend()
+plt.savefig(os.path.join(file_path, "accuracy_plot.png"))
+print("Accuracy Kaydedildi")
+plt.show()
+
+#########################################################
+
+# Sonuçlara bakma
+
+score=model.evaluate(x_test,y_test,verbose=1) # Bu kod satırı, modelinizin test veri kümesi üzerinde performansını değerlendirir. 
+#verbose=1: Bu, değerlendirme sırasında ilerlemeyi gösterecek ayrıntılı çıktıyı sağlar. verbose=0 sessiz bir çıktı verirken, verbose=2 ise daha fazla ayrıntı gösterir.
+print("Test loss : ",score[0])
+print("Test accuracy : ",score[1])
+
+y_pred=model.predict(x_validation)
+y_pred_class=np.argmax(y_pred,axis=1)
+Y_true=np.argmax(y_validation,axis=1)
+cm=confusion_matrix(Y_true,y_pred_class)
+# aşağıda oluşturduğumuz görsel sayesinde doğru tahminimizi görmüş oluyoruz
+f,ax=plt.subplots(figsize=(8,8))
+sns.heatmap(cm,annot=True,linewidths=0.01,cmap="Greens",linecolor="gray",fmt=".1f",ax=ax)
+plt.xlabel("Predicted")
+plt.ylabel("true")
+plt.title("Confusion Matrix")
+plt.savefig(os.path.join(file_path, "confusion_matrix.png"))
+print("Confusion Matrix kaydedildi")
+plt.show()
+
+"""
+# epoch= 15 iken bunu dedi :
+Genel Yorum:
+
+    Modeliniz eğitim sırasında makul bir performans sergilemiş ve doğrulama seti üzerindeki doğruluk %81.31 gibi iyi bir seviyeye ulaşmış.
+    Eğitim kaybının doğrulama kaybından daha yüksek olması, modelin doğrulama seti üzerinde daha iyi performans gösterdiğini işaret eder. Bu, modelin genelleme yeteneğinin iyi olduğunu gösterir.
+    Ancak, eğitim doğruluğu ile doğrulama doğruluğu arasındaki fark çok büyük değil. Bu da modelinizin eğitim verisi üzerinde aşırı uyum göstermediğini ve genel olarak dengeli bir performans sergilediğini gösterir.
+
+Bu sonuçlar, modelin genel olarak iyi bir performans sergilediğini ve henüz aşırı öğrenme belirtileri göstermediğini gösteriyor. Eğitim sürecini daha fazla epoch ile devam ettirip, performansı izlemek, sonuçları daha da iyileştirebilir.
+"""
+# yukarıdaki sonucun ardından epoch= 33 yaptım ve sonuçları inceledim epoch=25 uygulamasının doğru yaklaşım değeri olduğuna karar verdim
