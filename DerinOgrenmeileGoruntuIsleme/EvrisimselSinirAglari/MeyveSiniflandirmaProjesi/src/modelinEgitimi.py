@@ -53,14 +53,13 @@ def KlasordenResimiYukle(folder_path, img_size=(32, 32)):
 #########################################################
 
 # Veri seti yolunu ayarlayalım
-train_folder = "../input/archive/fruits-360_dataset_original-size/fruits-360-original-size/Training"
-test_folder = "../input/archive/fruits-360_dataset_original-size/fruits-360-original-size/Test"
-validation_folder = "../input/archive/fruits-360_dataset_original-size/fruits-360-original-size/Validation"
+train_folder = "../input/archive/Training"
+test_folder = "../input/archive/Test"
 
-# Train, test, validation setlerini oluşturalım # boyutlar için 100,100 diye bir not okudum o yüzden 100 yolluyorum
-x_train, y_train = KlasordenResimiYukle(train_folder,(100,100))
-x_test, y_test = KlasordenResimiYukle(test_folder,(100,100))
-x_validation, y_validation = KlasordenResimiYukle(validation_folder,(100,100))
+# Train, test, validation setlerini oluşturalım # boyutlar için 32,32 diye bir not okudum o yüzden 100 yolluyorum
+x_train, y_train = KlasordenResimiYukle(train_folder,(32,32))
+x_test, y_test = KlasordenResimiYukle(test_folder,(32,32))
+x_train,x_validation,y_train,y_validation=train_test_split(x_train,y_train,test_size=0.2,random_state=42)
 """
 # Şimdi boyutları görelim
 print("x_train boyutu:", x_train.shape)
@@ -88,9 +87,9 @@ x_validation = np.array([preProcess(img) for img in x_validation])
 
 
 # eğitime hazır hale getirmek için yeiden boyutlandıralım 
-x_train=x_train.reshape(-1,100,100,1)
-x_test=x_test.reshape(-1,100,100,1)
-x_validation=x_validation.reshape(-1,100,100,1)
+x_train=x_train.reshape(-1,32,32,1)
+x_test=x_test.reshape(-1,32,32,1)
+x_validation=x_validation.reshape(-1,32,32,1)
 
 print("***************************************************************")
 print("x_train boyutu:", x_train.shape)
@@ -101,14 +100,12 @@ print("x_validation boyutu:", x_validation.shape)
 print("y_validation boyutu:", len(y_validation))
 
 #########################################################
-
 # Data Generate (Veri oluştur)
 dataGen=ImageDataGenerator(width_shift_range=0.1,
                            height_shift_range=0.1,
                            zoom_range=0.1,
                            rotation_range=10)
 dataGen.fit(x_train)
-
 #########################################################
 
 # noOfClasses lazım olacak onun için fonksiyon
@@ -141,7 +138,7 @@ y_validation = to_categorical(y_validation, noOfClasses)
 
 # Modelimizi inşa etme aşamasına gelmiş bulunmaktayız
 model = Sequential()
-model.add(Input(shape=(100,100,1)))
+model.add(Input(shape=(32,32,1)))
 model.add(Conv2D(filters=8, kernel_size=(5,5), activation="relu", padding="same"))
 model.add(MaxPooling2D(pool_size=(2,2)))
 
@@ -163,7 +160,7 @@ batch_size=250
 # şimdi eğitim aşamasına geçiyoruz
 hist = model.fit(dataGen.flow(x_train, y_train, batch_size=batch_size),
                  validation_data=(x_validation, y_validation),
-                 epochs=25, steps_per_epoch=x_train.shape[0] // batch_size,
+                 epochs=76, steps_per_epoch=x_train.shape[0] // batch_size,
                  shuffle=True)
 
 #########################################################
@@ -217,8 +214,8 @@ y_pred_class=np.argmax(y_pred,axis=1)
 Y_true=np.argmax(y_validation,axis=1)
 cm=confusion_matrix(Y_true,y_pred_class)
 # aşağıda oluşturduğumuz görsel sayesinde doğru tahminimizi görmüş oluyoruz
-f,ax=plt.subplots(figsize=(8,8))
-sns.heatmap(cm,annot=True,linewidths=0.01,cmap="Greens",linecolor="gray",fmt=".1f",ax=ax)
+f,ax=plt.subplots(figsize=(35,35))
+sns.heatmap(cm,annot=True,linewidths=0.1,cmap="Greens",linecolor="gray",fmt=".1f",ax=ax)
 plt.xlabel("Predicted")
 plt.ylabel("true")
 plt.title("Confusion Matrix")
