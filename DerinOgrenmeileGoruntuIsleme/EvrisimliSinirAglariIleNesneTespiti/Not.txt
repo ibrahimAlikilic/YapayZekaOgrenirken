@@ -1,0 +1,4 @@
+CNN algoritmamıza input verince bize 3 tane çıktı verdiğini varsayalım
+Resim -> CNN -> çıktı
+Resim = Ana resim üzerinde matris ile gezerek ( ifade olarak matris demeyi doğru buldum ) bu bölge neye ait olduğunu CNN içerisinde tespit ettiğimiz parça 
+Nesne tespitinin çıktısı x,y,w,h dir.
