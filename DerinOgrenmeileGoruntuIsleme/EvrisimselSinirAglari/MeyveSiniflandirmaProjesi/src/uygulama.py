@@ -21,12 +21,16 @@ cap.set(4,480)
 pickle_in=open("../output/model_trained_new.p","rb")
 model=pickle.load(pickle_in)
 
+# sınıf adlarımızı yükleyelim
+with open("../output/class_names.pkl", "rb") as pickle_in:
+    class_names = pickle.load(pickle_in)
+
 #########################################################
 
 while True:
     ret,frame=cap.read()
     img=np.asarray(frame)
-    img=cv2.resize(32,32)
+    img=cv2.resize(img,(32,32))
     img=preProcess(img)
     img=img.reshape(1,32,32,1)
     
@@ -35,16 +39,17 @@ while True:
     # Predict(Tahmin):
     
     # Tahminler yapılır
-    predictions=model.predeict(img)
-    
+    predictions = model.predict(img)
+
     # Tahmin edilen sınıf indeksi
-    classIndex=np.argmax(predictions)
-    
+    classIndex = np.argmax(predictions)
+
     # Tahmin edilen olasılık değeri
-    probVal=np.max(predictions)
+    probVal = np.max(predictions)
     
     if probVal>0.7:
-        cv2.putText(frame,str(classIndex)+"     "+str(probVal),(50,50),cv2.FONT_HERSHEY_DUPLEX,1,(0,0,255))
+        class_name = class_names[classIndex]
+        cv2.putText(frame, f"{class_name}     {probVal:.2f}", (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 255))
     
     #####################################################
     

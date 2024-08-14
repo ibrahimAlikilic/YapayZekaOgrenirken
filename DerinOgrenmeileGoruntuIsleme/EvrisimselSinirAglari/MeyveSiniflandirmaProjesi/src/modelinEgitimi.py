@@ -17,7 +17,7 @@ import pickle
 #########################################################
 
 """
-Veri setini inceledim, tamamı test, train, validation olarak ayrılmış. Bu durumda fonksiyon oluşturup içlerine girip boyut eşitleyip np.array olarak geri döndürebilirim.
+Veri setini inceledim, tamamı test, train olarak ayrılmış. Bu durumda fonksiyon oluşturup içlerine girip boyut eşitleyip images, labels olarak döndürebilirim
 """
 def KlasordenResimiYukle(folder_path, img_size=(32, 32)):
     # Resimlerimiz ve sınıflarımız için listeler oluşturalım
@@ -57,6 +57,7 @@ train_folder = "../input/archive/Training"
 test_folder = "../input/archive/Test"
 
 # Train, test, validation setlerini oluşturalım # boyutlar için 32,32 diye bir not okudum o yüzden 100 yolluyorum
+# 100 sistem kaldırmadı o yüzden 32,32 gönderdim
 x_train, y_train = KlasordenResimiYukle(train_folder,(32,32))
 x_test, y_test = KlasordenResimiYukle(test_folder,(32,32))
 x_train,x_validation,y_train,y_validation=train_test_split(x_train,y_train,test_size=0.2,random_state=42)
@@ -163,6 +164,7 @@ hist = model.fit(dataGen.flow(x_train, y_train, batch_size=batch_size),
                  epochs=76, steps_per_epoch=x_train.shape[0] // batch_size,
                  shuffle=True)
 
+# epochs=81 denedim ve oluşan ilk önce oluşan grafiklere baktım ardından uçbirim ekranındaki sonuçlarla teğit ettim ve epochs=76 en uygun olduğuna karar verdim.
 #########################################################
 
 # Kayıt
@@ -222,15 +224,3 @@ plt.title("Confusion Matrix")
 plt.savefig(os.path.join(file_path, "confusion_matrix.png"))
 print("Confusion Matrix kaydedildi")
 plt.show()
-
-"""
-# epoch= 15 iken bunu dedi :
-Genel Yorum:
-
-    Modeliniz eğitim sırasında makul bir performans sergilemiş ve doğrulama seti üzerindeki doğruluk %81.31 gibi iyi bir seviyeye ulaşmış.
-    Eğitim kaybının doğrulama kaybından daha yüksek olması, modelin doğrulama seti üzerinde daha iyi performans gösterdiğini işaret eder. Bu, modelin genelleme yeteneğinin iyi olduğunu gösterir.
-    Ancak, eğitim doğruluğu ile doğrulama doğruluğu arasındaki fark çok büyük değil. Bu da modelinizin eğitim verisi üzerinde aşırı uyum göstermediğini ve genel olarak dengeli bir performans sergilediğini gösterir.
-
-Bu sonuçlar, modelin genel olarak iyi bir performans sergilediğini ve henüz aşırı öğrenme belirtileri göstermediğini gösteriyor. Eğitim sürecini daha fazla epoch ile devam ettirip, performansı izlemek, sonuçları daha da iyileştirebilir.
-"""
-# yukarıdaki sonucun ardından epoch= 33 yaptım ve sonuçları inceledim epoch=25 uygulamasının doğru yaklaşım değeri olduğuna karar verdim
