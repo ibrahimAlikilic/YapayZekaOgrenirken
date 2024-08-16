@@ -55,7 +55,7 @@ def non_maxi_suppression(boxes,probs=None,overlapThresh=0.3):
         
         #################################################
         # Threshol umun altında olan index lerimi sileceğim
-        idxs=np.delete(idxs,np.concatenate(([last],np.where(overlap>overlapThresh)))) 
+        idxs=np.delete(idxs,np.concatenate(([last],np.where(overlap>overlapThresh)[0]))) 
     return boxes[pick].astype("int")
 """
 Bu fonksiyon, verilen kutular (bounding boxes) üzerinde non-maximum suppression (NMS) işlemi yapar.
