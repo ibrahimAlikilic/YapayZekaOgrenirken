@@ -46,6 +46,10 @@ Fonksiyon, başlangıç görüntüsünden başlayarak her adımda belirli bir ö
 Küçültme işlemi, görüntü belirli bir minimum boyutun altına düşene kadar devam eder.
 Fonksiyon, her adımda görüntüyü döndürür, bu nedenle bir görüntü piramidi elde edilir.
 """
+
+"""
+Görmek amacıyla oluşturmuştuk başka koda çağırırken olmaması lazım
+
 img=cv2.imread("../input/husky.jpg")
 im=imagePyramid(img,1.5,(10,10))
 for i,image in enumerate(im):
@@ -55,3 +59,4 @@ for i,image in enumerate(im):
         plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))  # OpenCV BGR formatında okur, bu yüzden RGB'ye dönüştürüyoruz
         plt.title(f"{i}. leveldeki görüntü ")
         plt.show()
+"""

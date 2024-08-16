@@ -47,6 +47,9 @@ Bu fonksiyon, verilen bir görüntü üzerinde kaydırılabilir bir pencere tan�
 
 """
 
+"""
+Görmek amacıyla oluşturmuştuk başka koda çağırırken olmaması lazım
+
 img=cv2.imread("../input/husky.jpg")
 im=slidinWindow(img,5,(200,150))
 for i,image in enumerate(im):
@@ -57,3 +60,4 @@ for i,image in enumerate(im):
         plt.imshow(cv2.cvtColor(image[2], cv2.COLOR_BGR2RGB))  # OpenCV BGR formatında okur, bu yüzden RGB'ye dönüştürüyoruz
         plt.title(f"{i}. leveldeki görüntü ")
         plt.show()
+"""
