@@ -1,0 +1,53 @@
+1. Convolutional Neural Network (CNN)
+
+Convolutional Neural Network (CNN), derin öğrenmede özellikle görüntü verileri üzerinde çalışan bir sinir ağı türüdür. CNN'ler, görüntülerdeki desenleri ve özellikleri yakalamak için özellikle etkili olan katmanlardan oluşur.
+Yapı Taşları:
+
+    Convolutional Layer (Evrişim Katmanı): Görüntüdeki belirli özellikleri (kenarlar, köşeler gibi) yakalamak için kullanılır. Bir filtre, görüntü üzerinde gezdirilerek her bir bölgedeki özellikler çıkarılır.
+    Pooling Layer (Havuzlama Katmanı): Evrişim katmanından elde edilen özelliklerin boyutunu küçültür ve önemli bilgileri korurken hesaplama maliyetini düşürür.
+    Fully Connected Layer (Tam Bağlantılı Katman): Ağın sonuna eklenir ve sınıflandırma yapılır. Tüm nöronlar birbirine bağlıdır.
+
+Avantajlar:
+
+    Görüntüdeki uzamsal hiyerarşiyi yakalayabilir.
+    Parametre paylaşımı sayesinde daha az veri ile daha etkili bir şekilde öğrenebilir.
+
+2. Region-based Convolutional Neural Networks (RCNN)
+
+RCNN, nesne tespiti için kullanılan bir modeldir. RCNN, bir görüntüdeki farklı nesneleri tanımlamak ve her bir nesneyi bir sınıfa ayırmak için CNN'leri kullanır. RCNN, özellikle nesne tespitinde büyük başarı sağlamıştır.
+İşleyiş:
+
+    Region Proposals: İlk olarak, görüntüde nesne olabileceği muhtemel bölgeler önerilir. Bu bölgeler genellikle "Selective Search" algoritması ile belirlenir.
+    Feature Extraction: Her bölge bir CNN'e beslenerek özellik vektörleri çıkarılır.
+    Classification: Bu özellik vektörleri, her bir bölgenin hangi sınıfa ait olduğunu belirlemek için bir sınıflandırıcıya (genellikle SVM) verilir.
+    Bounding Box Regression: Tespit edilen bölgelerin sınırlarını hassaslaştırmak için bir regresyon modeli kullanılır.
+
+Avantajlar:
+
+    Nesne tespiti ve sınıflandırmada iyi performans gösterir.
+
+Dezavantajlar:
+
+    Yavaş ve hesaplama açısından maliyetlidir çünkü her bölge için ayrı bir CNN çalıştırılır.
+
+3. Residual Networks (ResNet)
+
+ResNet, derin sinir ağlarının eğitiminde karşılaşılan vanishing gradient (kaybolan gradyan) problemini çözmek için geliştirilmiş bir ağdır. ResNet, çok daha derin ağların eğitimine olanak sağlar.
+Yapısı:
+
+    Residual Block (Artık Blok): ResNet'in temel yapı taşıdır. Artık blok, standart bir katman dizisi yerine, girişin doğrudan çıktıya eklendiği bir yapı sunar. Bu sayede, gradyanların kaybolma riski azaltılır.
+
+    Deep Layers (Derin Katmanlar): ResNet mimarisi çok derindir; tipik olarak 50, 101, hatta 152 katmana kadar çıkabilir. Ancak bu derinliğe rağmen performansını korur.
+
+Avantajlar:
+
+    Çok derin ağların eğitimine olanak sağlar.
+    Vanishing gradient sorununu çözer.
+
+CNN, RCNN ve ResNet Arasındaki Farklar:
+
+    CNN: Genel amaçlı bir görüntü işleme mimarisi olup, sınıflandırma gibi temel görevler için kullanılır.
+    RCNN: Nesne tespiti gibi daha karmaşık görevler için özelleştirilmiş bir CNN türevidir.
+    ResNet: Derin ağların verimli bir şekilde eğitilmesine olanak tanıyan bir yapı olup, çok derin CNN'lerin temelini oluşturur.
+
+Özetle, CNN temel bir yapı taşını oluştururken, RCNN bunu nesne tespiti için kullanır ve ResNet ise daha derin ve daha verimli ağlar inşa etmek için tasarlanmıştır.
