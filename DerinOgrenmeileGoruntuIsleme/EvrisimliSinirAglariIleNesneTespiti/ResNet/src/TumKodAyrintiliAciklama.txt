@@ -1,0 +1,332 @@
+1. Kütüphanelerin ve Modüllerin İçe Aktarılması
+
+from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
+from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.applications import imagenet_utils
+import numpy as np
+import cv2
+import pandas as pd
+import os
+
+Bu bölüm, gerekli kütüphaneleri ve modülleri içe aktarır:
+
+    preprocess_input: ResNet50 modeline uygun şekilde görüntüleri ön işlemek için kullanılır.
+    ResNet50: ResNet-50 mimarisine sahip bir derin öğrenme modelini oluşturmak için kullanılır.
+    img_to_array: Bir görüntüyü numpy dizisine dönüştürmek için kullanılır.
+    imagenet_utils: ImageNet veri setiyle ilgili araçlar içerir, bunlar arasında tahminleri çözümlemek için decode_predictions fonksiyonu da yer alır.
+    cv2: OpenCV kütüphanesi, görüntü işleme için kullanılır.
+    pandas: Veri işleme ve analiz için kullanılır.
+    os: Dosya ve dizin işlemleri için kullanılır.
+
+2. Harici Fonksiyonların İçe Aktarılması
+
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../PiramitGosterimi/src')))
+from imagePyramid import imagePyramid
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../MaksimumOlmayanBastirma/src')))
+from nunMaxSupression import non_maxi_suppression
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../KayanPencere/src')))
+from slidingWindow import slidinWindow
+
+Bu kısım, harici modülleri (örneğin, imagePyramid, non_maxi_suppression, slidinWindow) proje dizinine göre belirtilen yollardan içe aktarır. Bu modüller, görüntü işleme işlemlerinde kullanılır.
+3. Parametrelerin Tanımlanması
+
+WIDTH = 600
+HEIGHT = 600
+PYR_SCALE = 1.5
+WIN_STEP = 16
+ROI_SIZE = (200, 150)
+INPUT_SIZE = (224, 224)
+
+Bu kısımda, işlem boyunca kullanılacak sabitler tanımlanır:
+
+    WIDTH ve HEIGHT: Girdi görüntüsünün yeniden boyutlandırılacağı genişlik ve yükseklik.
+    PYR_SCALE: Görüntü piramidi oluşturulurken her adımda uygulanacak ölçek faktörü.
+    WIN_STEP: Kayan pencere işlemi sırasında pencerenin her adımda kayacağı piksel sayısı.
+    ROI_SIZE: İlgi bölgesinin (Region of Interest - ROI) boyutu, yani kayan pencerenin boyutları.
+    INPUT_SIZE: ResNet50 modeline verilecek görüntülerin boyutu. Bu boyut, modelin eğitildiği veri setiyle aynı olmalıdır.
+
+4. ResNet Modelinin Yüklenmesi
+
+print("****************")
+print("Resnet yüklenmeye başlıyor...")
+model = ResNet50(weights="imagenet", include_top=True)
+print("Resnet yüklendi.")
+print("****************")
+
+Bu kısım, ResNet50 modelini yükler:
+
+    weights="imagenet": Modelin, ImageNet veri seti üzerinde önceden eğitilmiş ağırlıklarını kullanarak yüklenmesini sağlar. ImageNet, milyonlarca görüntü ve binlerce sınıf içeren büyük bir veri setidir.
+    include_top=True: Modelin sınıflandırma katmanlarını da içermesini sağlar. Eğer False olsaydı, sadece özellik çıkarımı için kullanılacak olan katmanlar yüklenirdi.
+
+5. Görüntünün Yüklenmesi ve Hazırlanması
+
+orig = cv2.imread("../input/husky.jpg")
+orig = cv2.resize(orig, dsize=(WIDTH, HEIGHT))
+(H, W) = orig.shape[:2]
+
+Bu bölüm, görüntüyü dosyadan yükler ve tanımlanan genişlik ve yükseklik boyutlarına göre yeniden boyutlandırır:
+
+    orig: Orijinal görüntü.
+    cv2.imread: Görüntüyü dosyadan okur.
+    cv2.resize: Görüntüyü belirtilen boyutlara yeniden boyutlandırır.
+    (H, W): Görüntünün yüksekliği ve genişliği.
+
+6. Görüntü Piramidi ve Kayan Pencere İşlemleri
+
+pyramid = imagePyramid(orig, PYR_SCALE, ROI_SIZE)
+
+rois = []
+locs = []
+
+for image in pyramid:
+    scale = W / float(image.shape[1])
+    for (x, y, roiOrig) in slidinWindow(image, WIN_STEP, ROI_SIZE):
+        x = int(x * scale)
+        y = int(y * scale)
+        w = int(ROI_SIZE[0] * scale)
+        h = int(ROI_SIZE[1] * scale)
+        
+        roi = cv2.resize(roiOrig, INPUT_SIZE)
+        roi = img_to_array(roi)
+        roi = preprocess_input(roi)
+        rois.append(roi)
+        locs.append((x, y, x + w, y + h))
+
+rois = np.array(rois, dtype="float32")
+
+Bu kısım, görüntü piramidi oluşturur ve her piramit seviyesinde kayan pencere işlemi gerçekleştirir:
+
+    imagePyramid: Farklı ölçeklerdeki görüntüleri üretir.
+    slidinWindow: Görüntünün her bir bölümünü tarayan kayan pencere işlemini gerçekleştirir.
+    scale: Her bir piramit seviyesi için ölçekleme faktörü.
+    roi: Kayan pencere işlemiyle elde edilen bölge, ResNet50 için uygun boyuta getirilir ve ön işlemden geçirilir.
+    rois: Bu bölgelerden elde edilen numpy dizisi.
+    locs: Bu bölgelerin orijinal görüntüdeki konumları.
+
+7. Sınıflandırma Aşaması
+
+print("****************")
+print("Sınıflandırma işlemi başlıyor...")
+preds = model.predict(rois)
+print("Sınıflandırma işlemi bitti.")
+print("****************")
+
+Bu kısım, modelin önceden belirlenen bölgeler üzerinde tahmin yapmasını sağlar:
+
+    preds: ResNet50 modelinin, belirlenen bölgelerdeki nesneleri sınıflandırma sonucu olarak döndürdüğü tahminler.
+
+8. İlk Tahminlerin Excel Dosyasına Kaydedilmesi
+
+initial_results = []
+
+for i, pred in enumerate(preds):
+    if pred.ndim == 1:
+        pred = np.expand_dims(pred, axis=0)
+    
+    initial_results.append({
+        "Image_Index": i,
+        "Predictions": pred.tolist(),
+        "Bounding_Box": locs[i]
+    })
+
+df_initial = pd.DataFrame(initial_results, columns=["Image_Index", "Predictions", "Bounding_Box"])
+output_path_initial = os.path.join("..", "output", "predictions_initial.xlsx")
+df_initial.to_excel(output_path_initial, index=False)
+print("****************")
+print(f"İlk tahminler '{output_path_initial}' dosyasına kaydedildi.")
+
+Bu kısım, tahmin sonuçlarını ve ilgili bounding box değerlerini Excel dosyasına kaydeder:
+
+    pred.ndim: Tahmin edilen sonuçların boyutunu kontrol eder.
+    df_initial: Tahmin sonuçları ve bounding box değerleri bir Pandas DataFrame'e dönüştürülür.
+    output_path_initial: Sonuçlar, belirtilen yolda bir Excel dosyası olarak kaydedilir.
+
+9. Tahminlerin Çözülmesi (Decode Edilmesi)
+
+preds = imagenet_utils.decode_predictions(preds, top=1)
+
+Bu kısım, modelin tahmin ettiği sınıfları ve bu sınıfların olasılıklarını ImageNet veri setindeki anlamlı etiketlere dönüştürür:
+
+    preds: Modelin döndürdüğü tahminler.
+    decode_predictions(preds, top=1):
+        preds: Model tarafından üretilen tahminlerin listesi.
+        top=1: En yüksek olasılığa sahip 1 sınıfın seçileceğini belirtir. Yani, her bir bölge için modelin en olası olarak tahmin ettiği tek bir sınıf döndürülür. Eğer bu değer 3 olsaydı, her bölge için en olası 3 sınıf döndürülecekti.
+
+10. Decode Edilmiş Tahminlerin İşlenmesi ve Kaydedilmesi
+
+# Decode edilmiş tahminlerin işlenmesi ve tabloya dönüştürülmesi
+decoded_results = []
+for i, decoded_pred in enumerate(preds):
+    (imagenetID, label, prob) = decoded_pred[0]
+    
+    # Tablonun satırı olarak tahmin sonuçlarını kaydet
+    decoded_results.append({
+        "Image_Index": i,
+        "Label": label,
+        "Probability": prob,
+        "Bounding_Box": locs[i]
+    })
+
+# Decode edilmiş sonuçları DataFrame olarak kaydetme
+df_decoded = pd.DataFrame(decoded_results, columns=["Image_Index", "Label", "Probability", "Bounding_Box"])
+
+# Kaydetme konumunu belirt
+output_path_decoded = os.path.join("..", "output", "predictions_decoded.xlsx")
+df_decoded.to_excel(output_path_decoded, index=False)
+
+print(f"Decode edilmiş tahminler '{output_path_decoded}' dosyasına kaydedildi.")
+print("****************")
+
+Açıklama:
+
+    decoded_results: Bu liste, her bir tahmin sonucu için gerekli bilgileri (ImageNet sınıf etiketi, olasılık değeri ve ilgili bounding box) saklamak için kullanılır.
+
+    for i, decoded_pred in enumerate(preds):: Bu döngü, preds içinde her bir tahmin sonucunu dolaşır. Her tahmin sonucu bir liste şeklindedir ve decoded_pred[0] bu listedeki en yüksek olasılığa sahip tahmini temsil eder.
+
+    imagenetID, label, prob: decoded_pred[0] ifadesi ile alınan tahmin sonucu, üç bileşenden oluşur:
+        imagenetID: Tahmin edilen sınıfın ImageNet'teki ID numarasıdır.
+        label: Tahmin edilen sınıfın etiketi yani isimlendirilmiş hali (örneğin, "Eskimo_dog").
+        prob: Tahmin edilen sınıfın olasılık değeri. Bu değer, modelin bu sınıfın doğru olduğunu düşündüğü olasılık miktarını gösterir.
+
+    decoded_results.append({...}): Her bir tahmin sonucu, bir sözlük (dictionary) olarak decoded_results listesine eklenir. Bu sözlük, şu bilgileri içerir:
+        Image_Index: Hangi görüntünün (ROI'nin) tahmin edildiğini belirtir.
+        Label: Tahmin edilen sınıf etiketi.
+        Probability: Bu sınıfa olan güven olasılığı.
+        Bounding_Box: Bu ROI'nin koordinatlarını (startX, startY, endX, endY) içeren bounding box.
+
+    df_decoded: decoded_results listesi, bir Pandas DataFrame'e dönüştürülür. Bu, verilerin daha düzenli ve erişilebilir bir şekilde saklanmasını sağlar.
+
+    output_path_decoded: Decode edilmiş tahminler, belirtilen yolda bir Excel dosyasına kaydedilir.
+
+    df_decoded.to_excel(...): Bu fonksiyon, oluşturulan DataFrame'i bir Excel dosyasına kaydeder. index=False parametresi, Excel dosyasında ek bir indeks sütununun oluşturulmamasını sağlar.
+
+11. Tahminlerin Eşik Değere Göre Filtrelenmesi ve Gruplandırılması
+
+# şimdi olasılıklara göre sınıflandırıcı tanımlayacağız
+labels={}
+min_conf=0.9
+
+# Labels oluşum döngüsü
+for (i,p) in enumerate(preds):
+    (_,label,prob)=p[0]
+    if prob>=min_conf:
+        box=locs[i]
+        
+        L=labels.get(label,[])
+        L.append((box,prob))
+        labels[label]=L
+
+# sınıflandırma sonucu bakalım ne bulmuş
+print("****************")
+print(f"sınıflandırma sonucunda karar verilen canlı : {labels.keys()}") # Eskimo_dog olarak ayıklayabilmiş olduğumuzu gördük.
+print("****************")
+
+Açıklama:
+
+    labels: Bu, tahmin edilen sınıfların isimlerini ve bu sınıflarla ilişkili bounding box ve olasılıkları saklayan bir sözlüktür (dictionary). Bu sözlük, sınıf etiketlerini anahtar olarak kullanır.
+
+    min_conf = 0.9: Eşik değeri olarak belirlenen olasılık. Eğer bir sınıfın olasılığı bu değerden yüksekse, bu sınıf labels sözlüğüne eklenir.
+
+    for (i, p) in enumerate(preds):: Bu döngü, preds içindeki her bir tahmin sonucunu dolaşır.
+
+    (_, label, prob) = p[0]: p[0], en yüksek olasılığa sahip tahmini temsil eder. Bu tahmin, ImageNet ID, sınıf etiketi (label) ve olasılık (prob) bileşenlerinden oluşur.
+
+    if prob >= min_conf:: Eğer bu tahmin edilen sınıfın olasılığı eşik değeri olan min_conf'tan büyük veya eşitse, bu tahmin işlemeye devam eder.
+
+    box = locs[i]: Tahmin edilen sınıf ile ilişkili bounding box koordinatları, locs listesinden alınır.
+
+    L = labels.get(label, []): Eğer labels sözlüğünde bu sınıf etiketi (label) daha önce kaydedilmemişse, yeni bir liste başlatır. Eğer kaydedilmişse, var olan listeyi alır.
+
+    L.append((box, prob)): Bu bounding box ve olasılık çifti, sınıf etiketiyle ilişkili listeye eklenir.
+
+    labels[label] = L: Güncellenmiş liste, labels sözlüğünde ilgili sınıf etiketi ile saklanır.
+
+    labels.keys(): labels sözlüğündeki tüm sınıf etiketlerini (anahtarları) döndürür. Bu, hangi sınıfların eşik değeri aşarak kabul edildiğini gösterir.
+
+12. Tahminlerin Görselleştirilmesi ve Kaydedilmesi
+
+ilkResimKayit=True
+ikinciResimKayit=True
+for label in labels.keys():
+    clone=orig.copy()
+    
+    # kutucuklarımızı çizelim
+    for (box, prob) in labels[label]:
+        (startX, startY, endX, endY) = box
+        cv2.rectangle(clone, (startX, startY), (endX, endY), (255, 0, 0), 2)
+    
+    if ilkResimKayit: 
+        # clone'u PNG olarak kaydedelim
+        output_path = os.path.join("..", "output", f"{label}_cok_alan_algilanmis.png")
+        cv2.imwrite(output_path, clone) # görüldüğü üzeri birden çok şeyi Eskimo_dog olarak sınıflandırmışız ve yanlış bizim istediğimiz bu değil
+        print("****************")
+        print(f"{label} için görüntü '{output_path}' dosyasına kaydedildi.")
+        print("****************")
+        ilkResimKayit=False
+
+Açıklama:
+
+    ilkResimKayit ve ikinciResimKayit: Görüntülerin sadece bir kez kaydedilmesi için kullanılan kontrol değişkenleridir.
+
+    for label in labels.keys():: Bu döngü, labels sözlüğündeki her bir sınıf etiketi için çalışır.
+
+    clone=orig.copy(): Orijinal görüntü (orig) kopyalanır ve bu kopya üzerinde işlem yapılır. Bu, orijinal görüntünün bozulmasını önler.
+
+    for (box, prob) in labels[label]:: Bu döngü, her bir sınıf etiketi için kaydedilen bounding box'ları dolaşır.
+
+    (startX, startY, endX, endY) = box: Bounding box koordinatları çözülür.
+
+    cv2.rectangle(clone, (startX, startY), (endX, endY), (255, 0, 0), 2): Bu fonksiyon, bounding box'ı görüntü üzerinde çizer. (255, 0, 0) mavi renkte bir kutu çizer ve 2 değeri, kutunun kalınlığını belirler.
+
+    if ilkResimKayit:: Sadece bir kez yapılacak olan görüntü kaydetme işlemi için kontrol yapılır.
+
+    output_path = os.path.join("..", "output", f"{label}_cok_alan_algilanmis.png"): Bu satır, kaydedilecek görüntünün dosya yolunu ve adını oluşturur. .. ile belirtilen klasör, bir üst dizini ifade eder ve output klasörüne kaydedileceğini belirtir.
+
+    cv2.imwrite(output_path, clone): İşlenmiş olan görüntü, belirtilen dosya yoluna PNG formatında kaydedilir.
+
+13. Non-Maximum Suppression (NMS) Uygulanması ve Tekrar Kaydedilmesi
+
+    clone=orig.copy()
+    # non-maxima
+    boxes=np.array([p[0] for p in labels[label]])
+    proba=np.array([p[1] for p in labels[label]])
+    
+    boxes=non_maxi_suppression(boxes,proba)
+    
+    # kutucuklarımızı yapmakla devam edelim
+    for (startX, startY, endX, endY) in boxes:
+        cv2.rectangle(clone,(startX, startY),(endX, endY),(255, 0, 0),2)
+        y=startY-10 if startY-10>10 else startY+10
+        cv2.putText(clone,label,(startX,y),cv2.FONT_HERSHEY_SIMPLEX,0.45,(0,0,255),2)
+    
+    if ikinciResimKayit:
+        # clone'u PNG olarak kaydedelim
+        output_path = os.path.join("..", "output", f"{label}_tek_alan_algilanmis.png")
+        cv2.imwrite(output_path, clone) 
+        print("****************")
+        print(f"{label} için görüntü '{output_path}' dosyasına kaydedildi.")
+        print("****************")
+        ikinciResimKayit=False
+
+Açıklama:
+
+    boxes=np.array([p[0] for p in labels[label]]): Tahmin edilen bounding box'lar bir numpy array'e dönüştürülür.
+
+    proba=np.array([p[1] for p in labels[label]]): Bounding box'larla ilişkili olasılıklar da bir numpy array'e dönüştürülür.
+
+    boxes=non_maxi_suppression(boxes,proba): Bu fonksiyon, overlapping (üst üste binen) bounding box'ları filtrelemek için kullanılır. Sadece en yüksek olasılığa sahip olan bounding box bırakılır.
+
+    for (startX, startY, endX, endY) in boxes:: Bu döngü, non-maximum suppression sonrasında kalan bounding box'ları dolaşır ve bunları çizer.
+
+    cv2.putText(clone, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2): Sınıf etiketi, bounding box'ın üzerine yazılır. Bu etiketi, kırmızı renk (0, 0, 255) ve 0.45 ölçekli yazı tipi ile gösterir.
+
+    if ikinciResimKayit:: Yalnızca bir kez kaydetme işlemini gerçekleştirmek için kontrol edilir.
+
+    output_path = os.path.join("..", "output", f"{label}_tek_alan_algilanmis.png"): NMS sonrası filtrelenmiş bounding box'ların bulunduğu görüntünün kaydedileceği dosya yolu ve adı.
+
+    cv2.imwrite(output_path, clone): Sonuç görüntüsü belirtilen yolda PNG formatında kaydedilir.
+
+Bu işlemler sonucunda, birden çok alanın algılandığı ve non-maximum suppression uygulandıktan sonra tek bir alanın algılandığı iki farklı görüntü kaydedilir.
