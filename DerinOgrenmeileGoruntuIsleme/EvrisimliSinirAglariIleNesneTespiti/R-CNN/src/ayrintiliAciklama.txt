@@ -1,0 +1,136 @@
+Bu kod, bir görüntü üzerinde Selective Search kullanarak belirli bölgeleri (nesne adaylarını) seçiyor ve ardından bu bölgelerde bulunan nesneleri sınıflandırarak sonuçları görselleştiriyor ve kaydediyor. Kod ayrıca belirli parametreleri kullanarak görüntüleri yeniden boyutlandırıyor, gri tonlamaya çeviriyor, ve olasılık tahminleri yaparak belirli nesneleri tespit ediyor.
+
+Şimdi kodun her bir kısmını ayrıntılı olarak açıklayalım:
+Gerekli Kütüphanelerin İçe Aktarılması
+
+
+import cv2
+import pickle
+import numpy as np
+import random
+from tensorflow.keras.preprocessing.image import img_to_array
+import os
+
+    cv2: OpenCV kütüphanesi, bilgisayarla görme görevlerini gerçekleştirmek için kullanılır.
+    pickle: Python'da objeleri (model, veri vb.) serileştirip dosyaya kaydetmek veya dosyadan geri yüklemek için kullanılır.
+    numpy: Sayısal işlemler ve dizi operasyonları için kullanılan temel Python kütüphanesi.
+    random: Rastgele sayılar oluşturmak için kullanılan Python kütüphanesi.
+    img_to_array: Keras'tan gelen bu fonksiyon, görüntüyü (image) Numpy dizisine (array) dönüştürür.
+    os: Dosya ve dizin işlemleri yapmak için kullanılan Python modülü.
+
+Görüntünün Okunması
+
+
+image = cv2.imread("../input/mnist(1).png")
+
+    cv2.imread: Dosya yolundan bir görüntü okur ve bunu bir Numpy dizisi olarak döndürür. Burada, "../input/mnist(1).png" adlı dosyadaki görüntü okunuyor.
+
+Selective Search Aşaması
+
+Selective Search, bir görüntüdeki potansiyel nesne bölgelerini tespit etmek için kullanılan bir algoritmadır.
+
+
+print("Selective Search aşaması başladı ...")
+ss = cv2.ximgproc.segmentation.createSelectiveSearchSegmentation()
+ss.setBaseImage(image)
+ss.switchToSelectiveSearchQuality()
+rects = ss.process()
+print("Selective Search aşaması bitti.")
+
+    cv2.ximgproc.segmentation.createSelectiveSearchSegmentation(): OpenCV'de Selective Search Segmentasyonu başlatır.
+    ss.setBaseImage(image): Segmentasyon için temel görüntüyü ayarlar.
+    ss.switchToSelectiveSearchQuality(): Kaliteli (daha yavaş ama daha doğru) Selective Search moduna geçer.
+    rects = ss.process(): Görüntüdeki olası nesne adaylarının koordinatlarını döndürür. Bu koordinatlar, her biri (x, y, width, height) şeklindedir.
+
+Nesne Adaylarının İşlenmesi ve Sınıflandırılması
+
+
+proposals = []
+boxes = []
+output = image.copy()
+
+for (x, y, w, h) in rects[:100]:
+    color = [random.randint(0, 255) for j in range(0, 3)]
+    roi = image[y:y+h, x:x+w]
+    roi = cv2.resize(roi, dsize=(32, 32), interpolation=cv2.INTER_LANCZOS4)
+    roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+    roi = img_to_array(roi)
+    proposals.append(roi)
+    boxes.append((x, y, x+w, y+h))
+
+    output = image.copy(): Görüntünün bir kopyasını oluşturur, bu kopya üzerine çizimler yapılacak.
+    rects[:100]: İlk 100 nesne adayını seçer.
+    color = [random.randint(0, 255) for j in range(0, 3)]: Rastgele bir renk seçer (görselleştirme için).
+    roi = image[y:y+h, x:x+w]: Nesne adayının görüntüdeki alt bölümünü (Region of Interest - ROI) kesip çıkarır.
+    cv2.resize(roi, dsize=(32, 32), interpolation=cv2.INTER_LANCZOS4): ROI'yi 32x32 boyutuna yeniden boyutlandırır. Burada cv2.INTER_LANCZOS4 kullanılmıştır çünkü bu yöntem, yüksek kaliteli küçültme işlemleri için idealdir.
+    cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY): ROI'yi gri tonlamaya çevirir.
+    roi = img_to_array(roi): Gri tonlamalı ROI'yi Numpy dizisine çevirir.
+    proposals.append(roi): ROI'yi aday listesine ekler.
+    boxes.append((x, y, x+w, y+h)): Nesne adayının koordinatlarını kaydeder.
+
+Model Yükleme ve Tahmin
+
+
+proposals = np.array(proposals, dtype="float64")
+boxes = np.array(boxes, dtype="int32")
+
+pickel_in = open("../../../EvrisimselSinirAglari/RakamSiniflandirmaProjesi/output/model_trained_new.p", "rb")
+model = pickle.load(pickel_in)
+proba = model.predict(proposals)
+
+    proposals = np.array(proposals, dtype="float64"): Aday görüntülerin listesini Numpy dizisine dönüştürür.
+    boxes = np.array(boxes, dtype="int32"): Aday kutuların listesini Numpy dizisine dönüştürür.
+    pickle.load: Daha önce eğitilmiş ve kaydedilmiş model dosyasını yükler.
+    model.predict(proposals): Modeli kullanarak ROI'ler üzerinde tahminler yapar.
+
+Olasılık Değerlerinin Analizi
+
+
+number_list = []
+idx = []
+for i in range(len(proba)):
+    max_proba = np.max(proba[i, :])
+    if max_proba > 0.95:
+        idx.append(i)
+        number_list.append(np.argmax(proba[i]))
+
+    max_proba = np.max(proba[i, :]): Her ROI için maksimum olasılığı alır.
+    if max_proba > 0.95: Eğer bu olasılık %95'in üzerindeyse, bu ROI'nin güvenilir olduğunu kabul eder.
+    idx.append(i): Güvenilir ROI'nin indeksini kaydeder.
+    number_list.append(np.argmax(proba[i])): Tahmin edilen sınıfı (rakam) kaydeder.
+
+Görselleştirme
+
+
+for i in range(len(number_list)):
+    j = idx[i]
+    cv2.rectangle(image, (boxes[j, 0], boxes[j, 1]), (boxes[j, 2], boxes[j, 3]), (0, 0, 255), 2)
+    cv2.putText(image, str(np.argmax(proba[j])), (boxes[j, 0]+5, boxes[j, 1]+5), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0), 1)
+image = cv2.resize(image, (650, 650))
+cv2.imshow("image", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+    cv2.rectangle: Görüntü üzerinde nesne adayının etrafına bir dikdörtgen çizer.
+    cv2.putText: Dikdörtgenin içine sınıf tahminini yazar.
+    cv2.resize(image, (650, 650)): Sonuç görüntüsünü 650x650 boyutuna yeniden boyutlandırır.
+    cv2.imshow("image", image): Sonucu bir pencere içinde gösterir.
+    cv2.waitKey(0): Pencereyi kullanıcı bir tuşa basana kadar açık tutar.
+    cv2.destroyAllWindows(): Tüm OpenCV pencerelerini kapatır.
+
+Görüntünün Kaydedilmesi
+
+
+output_path = os.path.join("..", "output", "siniflandirilmisRakamlar.png")
+cv2.imwrite(output_path, image)
+print("****************")
+print(f"siniflandirilmisRakamlar için görüntü '{output_path}' dosyasına kaydedildi.")
+print("****************")
+
+    os.path.join: Kaydedilecek dosya yolunu oluşturur.
+    cv2.imwrite: Görüntüyü belirtilen yola kaydeder.
+    print: Kaydetme işlemiyle ilgili bilgi verir.
+
+Özet
+
+Bu kod, bir görüntü üzerinde Selective Search kullanarak potansiyel nesne adaylarını tespit eder, bu adayları bir makine öğrenimi modeli ile sınıflandırır ve tespit edilen nesneleri görselleştirir. Sonuç olarak, bu nesneleri içeren görüntü kaydedilir ve kullanıcıya gösterilir.
