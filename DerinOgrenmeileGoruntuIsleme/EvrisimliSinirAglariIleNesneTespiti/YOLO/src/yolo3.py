@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../input')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../Masaüstü/YOLOlar')))
 from yolo_model import YOLO 
 
 #########################################################
