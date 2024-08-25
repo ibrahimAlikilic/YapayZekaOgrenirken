@@ -7,9 +7,6 @@ from yolo_model import YOLO
 
 #########################################################
 
-current_directory = os.getcwd()
-print("Şu anda bulunduğunuz dizin:", current_directory)
-
 yolo=YOLO(0.6,0.5)
 
 #########################################################
@@ -87,3 +84,18 @@ boxes,classes,scores=yolo.predict(pimage,image.shape)
 print(f"boxes : {boxes}")
 print(f"classes : {classes}")
 print(f"scores : {scores}")
+
+# sınıflandırmayı yaptık şimdi doğru tespit edebilmiş miyiz diye görselleştirme yapacağız
+for box,cl,sco in zip(boxes,classes,scores):
+    x,y,w,h=box
+    # hatırlatma : np.floor olunca ondalıklı sayı taban değere yuvarlanır.
+    top=max(0,np.floor(x+0.5).astype(int))
+    left=max(0,np.floor(y+0.5).astype(int))
+    right=max(0,np.floor(x+w+0.5).astype(int))
+    bottom=max(0,np.floor(y+h+0.5).astype(int))
+    cv2.rectangle(image,(top,left),(right,bottom),(255,0,0),2)
+    cv2.putText(image,"{} {}".format(all_classes[cl],sco),(top,left-6),cv2.FONT_HERSHEY_SIMPLEX,0.6,(0,0,255),1,cv2.LINE_AA)
+
+cv2.imshow("YOLO",image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
