@@ -1,0 +1,37 @@
+1) Piramit Gösterimi
+2) Kayan Pencere
+3) Maximm Olmayan Bastırma
+4) ResNet
+5) Secmeli Arama
+6) Bolge Onerisi
+7) R-CNN
+8) YOLO
+9) SSD
+
+***********************************************
+
+1) Piramit Gösterimi : 
+    Görüntüyü yeniden ölçeklendirme
+
+2) Kayan Pencere :
+    Belirlemiş olduğun matris boyutu ile tüm resmi gezersin ve tespit için kullanırsın.
+3) Maximum Olmayan Bastırma :
+    Belirlemiş olduğum thresh değerinin altındaki kutucukları yok sayarak 1 nesnede 1 tespit olmasını sağlıyor
+4) ResNet :
+    Yukarıdaki özellikleri kullanarak sınıflandırma yaparak tespit edilen nesnenin hangi sınıfa ait olduğunu belirler
+5) Secmeli Arama :
+    Belli özelliklere bakarak ( Klasör içerisindeki görselde azıyor ) nesne tespiti yapar.
+6) Bolge Onerisi :
+    SelectiveSearch işlemi ile olası nesneleri tespit ediyoruz . Ardından bunları rect e eşitliyoruz ve rect in tuttuğu koordinatları alıp roi mizi belirleyip bunları
+    proposals ve boxes lara abbend ediyoruz . ARdından tahmin işlemini gerçekleştiriyoruz.
+    Sonrasında sözlük oluşturup bu sözlüge bulmuş olduğumuz nesnenin koordinatını ve class adını veriyoruz en son da görselleştiriyoruz.
+7) R-CNN :
+    Bir görüntü üzerinde Selective Search kullanarak belirli bölgeleri (nesne adaylarını) seçiyor ve ardından bu bölgelerde bulunan nesneleri sınıflandırarak sonuçları
+    görselleştiriyor ve kaydediyor. Ayrıca belirli parametreleri kullanarak görüntüleri yeniden boyutlandırıyor, gri tonlamaya çeviriyor
+    ve olasılık tahminleri yaparak belirli nesneleri tespit ediyor.
+8) YOLO :
+    Hazır YOLO kodlarını kullanarak sınıflandırma ve tespit işlemi
+9) SSD :
+    MobilNet SSD Modelinin Yüklenmesi: Önceden eğitilmiş MobilNet SSD modeli, nesne tespiti için yüklenir.
+    Resimlerin İşlenmesi: Verilen klasördeki her resim modelle işlenir, resim içindeki nesneler tespit edilir.
+    Nesne Tespiti: Her bir tespit için belirli bir güven değeri üzerinde olan nesneler işaretlenir, etiketlenir ve renklendirilir.

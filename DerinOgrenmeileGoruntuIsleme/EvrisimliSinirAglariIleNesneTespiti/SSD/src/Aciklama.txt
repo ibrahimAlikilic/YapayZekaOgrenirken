@@ -1,0 +1,111 @@
+1. Kütüphanelerin İçe Aktarılması
+
+python
+
+import cv2
+import numpy as np
+import os
+
+    cv2: OpenCV kütüphanesi, bilgisayarla görme ve görüntü işleme için kullanılır.
+    numpy (np): Sayısal işlemler ve dizilerle çalışmak için kullanılır.
+    os: Dosya ve dizin işlemleri için kullanılır.
+
+2. Sınıfların ve Renklerin Tanımlanması
+
+python
+
+CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
+	"bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+	"dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+	"sofa", "train", "tvmonitor"]
+
+COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
+
+    CLASSES: Bu, modelin tanıyabileceği 21 farklı nesne sınıfını tanımlar. İlk eleman "background" (arka plan) olup, genellikle dikkate alınmayan alanları ifade eder.
+    COLORS: Her sınıfa rastgele bir renk atanır. np.random.uniform(0, 255, size=(len(CLASSES), 3)) ifadesi, RGB renk aralığında her sınıf için rastgele bir renk oluşturur.
+
+3. MobilNet SSD Modelinin Yüklenmesi
+
+python
+
+net = cv2.dnn.readNetFromCaffe("../input/SSD/MobileNetSSD_deploy.prototxt.txt", "../input/SSD/MobileNetSSD_deploy.caffemodel")
+
+    cv2.dnn.readNetFromCaffe: Bu fonksiyon, Caffe framework'ünde eğitilmiş bir modelin prototip dosyasını (.prototxt) ve ağırlık dosyasını (.caffemodel) yükler. Burada, bir MobilNet SSD (Single Shot Detector) modeli kullanılıyor. Bu model, nesne algılama işlemi için optimize edilmiştir.
+
+4. Dosya Yollarının Ayarlanması
+
+python
+
+current_directory = os.path.dirname(os.path.abspath(__file__))
+images_directory = os.path.join(current_directory, '..', 'input', 'images')
+files = [f for f in os.listdir(images_directory) if f.endswith('.jpg')]
+img_path_list = [os.path.join(images_directory, f) for f in files]
+
+    current_directory: Kodun çalıştığı dizinin yolu.
+    images_directory: Resimlerin bulunduğu dizinin yolu. Bu, şu anki dizinden bir üst dizine (..) çıkarak input/images klasörünü hedefler.
+    files: images_directory dizininde bulunan ve .jpg uzantısına sahip tüm dosyalar listelenir.
+    img_path_list: Her resim dosyasının tam yolunu içeren bir liste oluşturulur.
+
+5. Görüntülerin İşlenmesi
+
+python
+
+for i in img_path_list:
+    image = cv2.imread(i)
+    (h, w) = image.shape[:2]
+    
+    blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 0.007843, (300, 300), 127.5)
+    net.setInput(blob)
+    detections = net.forward()
+
+    for i in img_path_list:: Listedeki her bir resim dosyası için bir döngü başlatılır.
+    cv2.imread(i): Resim dosyası okunur ve image değişkenine atanır.
+    (h, w) = image.shape[:2]: Resmin yüksekliği (h) ve genişliği (w) elde edilir.
+    cv2.dnn.blobFromImage: Resim, modelin girdi formatına dönüştürülür.
+        cv2.resize(image, (300, 300)): Resim, 300x300 piksel boyutuna ölçeklendirilir.
+        0.007843: Bu, piksel değerlerini 0-1 aralığına normalleştirmek için kullanılan bir ölçek faktörüdür (1/127.5).
+        127.5: Ortalama çıkarma değeri, genellikle giriş verilerini merkezlemek için kullanılır.
+    net.setInput(blob): Blob, modelin girişine (input) atanır.
+    detections = net.forward(): Model, görüntüdeki nesneleri algılar ve detections değişkenine sonuçları atar.
+
+6. Tespitlerin Görselleştirilmesi
+
+python
+
+for j in np.arange(0, detections.shape[2]):
+    confidence = detections[0, 0, j, 2]
+    if confidence > 0.30:
+        idx = int(detections[0, 0, j, 1])
+        box = detections[0, 0, j, 3:7] * np.array([w, h, w, h])
+        (startX, startY, endX, endY) = box.astype("int")
+        
+        label = "{}: {:.2f}".format(CLASSES[idx], confidence)
+        cv2.rectangle(image, (startX, startY), (endX, endY), COLORS[idx], 2)
+        y = startY - 16 if startY - 16 > 15 else startY + 16
+        cv2.putText(image, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
+
+    for j in np.arange(0, detections.shape[2]):: Algılanan her nesne için bir döngü başlatılır. detections.shape[2] değeri, toplam tespit sayısını ifade eder.
+    confidence = detections[0, 0, j, 2]: Her tespit için güven değeri (confidence) alınır. Bu değer, nesnenin tespitte ne kadar emin olunduğunu gösterir.
+    if confidence > 0.30:: Güven değeri %30'dan büyükse tespit dikkate alınır.
+    idx = int(detections[0, 0, j, 1]): Algılanan nesnenin sınıf indeksi alınır.
+    box = detections[0, 0, j, 3:7] * np.array([w, h, w, h]): Algılanan nesnenin konum koordinatları (box) hesaplanır. Bunlar, resmin orijinal boyutlarına göre ayarlanır.
+    (startX, startY, endX, endY) = box.astype("int"): Koordinatlar tamsayıya dönüştürülür.
+    label = "{}: {:.2f}".format(CLASSES[idx], confidence): Nesnenin sınıf adı ve güven değeri etiketi oluşturulur.
+    cv2.rectangle(image, (startX, startY), (endX, endY), COLORS[idx], 2): Resmin üzerinde nesnenin çevresine dikdörtgen çizilir.
+    cv2.putText(image, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2): Resmin üzerinde, nesnenin etiketi belirtilen pozisyona yazılır.
+
+7. Görüntünün Gösterilmesi ve Pencerelerin Kapatılması
+
+python
+
+cv2.imshow("ssd", image)
+if cv2.waitKey(0) & 0xFF == ord("q"):
+    continue
+
+cv2.destroyAllWindows()
+
+    cv2.imshow("ssd", image): İşlenmiş resim, bir pencere içinde görüntülenir. Pencerenin adı "ssd" olarak belirlenmiştir.
+    cv2.waitKey(0): Kullanıcının bir tuşa basmasını bekler. Basılan tuş q ise döngü bir sonraki resimle devam eder.
+    cv2.destroyAllWindows(): Tüm pencereleri kapatır.
+
+Bu kod, belirli bir klasördeki resimleri okuyarak, nesne tespiti yapar ve tespit edilen nesnelerin etrafına dikdörtgenler çizip etiketlerini görüntüler. Ayrıca, her tespit edilen nesne için rastgele bir renk atanır ve sonuçları ekranda gösterir.
