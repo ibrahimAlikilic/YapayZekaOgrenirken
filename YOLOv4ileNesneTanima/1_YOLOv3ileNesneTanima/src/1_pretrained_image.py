@@ -112,28 +112,8 @@ YOLOv3 gibi modellerde, birçok farklı katman bulunur ve her katman, belirli bi
 # bunun için özel bir fonksiyon var ama onda şöyle bir durum var bze kaçıncı sırada olduğunu döndürüyor ama biz index olarak kullanıyoruz o yüzden -1 diyeceğiz
 print("****************************")
 print(f"model.getUnconnectedOutLayers() :  {model.getUnconnectedOutLayers()}")
-output_layert=[layers[layer[0]-1] for layer in model.getUnconnectedOutLayers()]
-"""
-model.getUnconnectedOutLayers():
-
-    Bu yöntem, modelin son (bağlantısız) çıkış katmanlarının indekslerini döndürür. Bu katmanlar, modelin nihai çıktısını üreten katmanlardır.
-    YOLOv3 gibi modellerde, birden fazla çıkış katmanı bulunabilir (örneğin, farklı ölçeklerde nesne tespiti için).
-
-layer[0]:
-
-    model.getUnconnectedOutLayers() yöntemi, bir liste döndürür ve bu listedeki her öğe aslında bir dizin numarasını tutan bir NumPy array'dir.
-    Bu array'de genellikle tek bir sayı bulunur, ve layer[0] ifadesi bu sayıyı alır.
-    
-    Yani, layer aslında tek bir değer içeren bir array'dir ([index] gibi) ve layer[0], bu array'deki ilk (ve tek) değeri alır.
-
-layers[layer[0] - 1]:
-
-    getLayerNames() yöntemiyle elde edilen layers listesi, modeldeki tüm katmanların isimlerini sırasıyla içerir.
-    Ancak, getUnconnectedOutLayers() fonksiyonunun döndürdüğü dizinler 1 tabanlıdır (yani, ilk katman 1 olarak numaralandırılır).
-    
-    Python'daki diziler ise 0 tabanlıdır, yani ilk eleman layers[0] olarak erişilir.
-    Bu nedenle, layer[0] - 1 ifadesi kullanılır, böylece 1 tabanlı dizin numarası, 0 tabanlı dizin numarasına dönüştürülür.
-"""
+output_layert=[layers[layer-1] for layer in model.getUnconnectedOutLayers()]
+# Eğitim videosunda layer[0]-1 diyordu ama hata aldım ve benim mantığıma da uymamıştı yanlış olduğunu düşünüyordum ki hata aldım o yüzden bu şekilde düzenledim
 
 model.setInput(img_blob)
 # setInput: Bu yöntem, modele bir giriş (input) verisi sağlar. Yani, modelin işlem yapması için gerekli olan veriyi, bu fonksiyon aracılığıyla modele iletmiş oluyorsun.
