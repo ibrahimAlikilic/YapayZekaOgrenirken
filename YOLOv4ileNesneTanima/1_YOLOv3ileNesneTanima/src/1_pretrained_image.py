@@ -5,7 +5,7 @@ import random
 
 ##########################################
 #%% Resim
-img=cv2.imread("../input/images/people.jpg") # Hatırlatma : Resimleri BGR okur
+img=cv2.imread("../input/images/traffic.jpg") # Hatırlatma : Resimleri BGR okur
 img_width=640
 img_height=427
 img=cv2.resize(img,(img_width,img_height))
@@ -73,9 +73,9 @@ print(f"labels : {labels}")
 
 colors = np.random.uniform(0, 255, size=(len(labels), 3))
 print("****************************")
-print(f"type(colors) : {type(colors)} , colors.dtype : {colors.dtype}") # ileride tr sorunu yaşamamak için kendimi teğit ediyorum # float dedi bana int lazım
+print(f"type(colors) : {type(colors)} , colors.dtype : {colors.dtype}") # ileride tür sorunu yaşamamak için kendimi teğit ediyorum # float dedi bana int lazım
 colors = colors.astype(int)
-print(f"type(colors) : {type(colors)} , colors.dtype : {colors.dtype}") # ileride tr sorunu yaşamamak için kendimi teğit ediyorum # float dedi bana int lazım
+print(f"type(colors) : {type(colors)} , colors.dtype : {colors.dtype}") # ileride tür sorunu yaşamamak için kendimi teğit ediyorum # float dedi bana int lazım
 
 #####################
 # Model variable
@@ -117,6 +117,47 @@ output_layert=[layers[layer-1] for layer in model.getUnconnectedOutLayers()]
 
 model.setInput(img_blob)
 # setInput: Bu yöntem, modele bir giriş (input) verisi sağlar. Yani, modelin işlem yapması için gerekli olan veriyi, bu fonksiyon aracılığıyla modele iletmiş oluyorsun.
-detetion_layers=model.forward(output_layert)
+detection_layers=model.forward(output_layert)
 # forward() fonksiyonu, modelin ileri besleme işlemini gerçekleştirir. Bu, modelin giriş verisini (görüntüyü) işleyip çıktıları (nesne tespitlerini) üretmesi anlamına gelir.
 # Bu fonksiyon, modelin belirtilen çıkış katmanlarının çıktısını döndürür.
+
+##########################################
+#%% İnceleme
+print("****************************")
+print(detection_layers) # gördüğümüz üzere belli başlı kendi içerisinde manası olan matrislere sahipler
+
+# bu matrisleri gezelim
+# çok boyutlu matris olaraka düşün o yüzden 2 for
+print("****************************")
+for detection_layer in detection_layers:
+    for object_detection in detection_layer:
+        # güven skorü ile ilgilenelim
+        score=object_detection[5:] # ilk 5 değer box ile ilgili
+        # score içerisindeki en büyük değer benim predicted id olacak = tahmin edilen nesnemin index i
+        predicted_id=np.argmax(score)
+        confidence=score[predicted_id] # confidence = güven skoru
+        
+        # box çizim aşamasına geldik
+        if confidence > 0.3:
+            label=labels[predicted_id] # labeli ne onu alalım
+            bounding_box=object_detection[0:4] * np.array([img_width,img_height,img_width,img_height])
+            # object_detection[0:4] ün döndürdüğü değerler normalize edilmiş durumdadır bu sebepten dolayı " * np.array([img_width,img_height,img_width,img_height])" yaıyoruz
+            (box_center_x,box_center_y,box_width,box_height)=bounding_box.astype("int")
+            start_x=int(box_center_x-(box_width/2))
+            start_y=int(box_center_y-(box_height/2))
+            end_x = start_x + box_width
+            end_y = start_y + box_height
+            
+            box_color=colors[predicted_id]
+            box_color=[int(each) for each in box_color]# liste şeklinde olması gerekemkte # aslında yukarıda int olarak oluşturmuştum ama burada int olmayınca hata aldım
+            cv2.rectangle(img,(start_x,start_y),(end_x,end_y),box_color,1)
+            
+            # label imde confidence değerimi de görmek istiyorum
+            label="{}: {:.2f}%".format(label,confidence*100) # Hatırlatma : ".2f" . dan sonra 2 basamak olsun manasında
+            print(f"prediction object {label}") # uçbirimde de görmek istedim
+            cv2.putText(img,label,(start_x,start_y-10),cv2.FONT_HERSHEY_SIMPLEX,0.5,box_color,1)
+# Büyük görmek istiyorum
+img=cv2.resize(img,(1280,960))
+cv2.imshow("Tespit (Detection)",img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
