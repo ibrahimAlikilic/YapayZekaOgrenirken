@@ -5,7 +5,7 @@ import random
 
 ##########################################
 #%% Resim
-img=cv2.imread("../input/images/traffic.jpg") # Hatırlatma : Resimleri BGR okur
+img=cv2.imread("../input/images/neighbourhood.jpg") # Hatırlatma : Resimleri BGR okur
 img_width=640
 img_height=427
 img=cv2.resize(img,(img_width,img_height))
