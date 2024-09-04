@@ -1,7 +1,7 @@
 import os
 
 # Fotoğrafların bulunduğu dizinin yolu
-directory = "../images"
+directory = "../../../../Masaüstü/DateSets/boston dynamics spot"
 
 # Dizin içindeki dosyaları al ve yalnızca .jpg uzantılı olanları filtrele
 files = [f for f in os.listdir(directory)]
