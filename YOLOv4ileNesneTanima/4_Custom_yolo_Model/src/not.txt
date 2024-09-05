@@ -1,1 +1,2 @@
 spot_data yolov4/darknet içerisine konuluyor
+ziplenip drive yüklenip ardından eğitim gerçekleştiriliyor .

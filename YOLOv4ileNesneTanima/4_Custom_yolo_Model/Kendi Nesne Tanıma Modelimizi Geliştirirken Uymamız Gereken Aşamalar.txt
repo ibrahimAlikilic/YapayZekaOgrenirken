@@ -1,0 +1,5 @@
+1) Darknet
+2) Veri toplama (Dataset)
+3) Veri Düzenleme
+4) Veri etiketleme
+5) Eğitim
