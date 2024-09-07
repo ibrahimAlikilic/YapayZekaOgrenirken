@@ -1,0 +1,86 @@
+[net] Bölümü
+
+Bu bölüm, ağın temel eğitim parametrelerini tanımlar.
+
+    batch: Eğitim sırasında kullanılan örnek sayısı (batch size). Burada 64 olarak ayarlanmış.
+
+    subdivisions: Batch'i parçalara böler. Yani, büyük bir batch, daha küçük parçalara bölünerek işlem yapılır. Bu, bellekteki yükü azaltabilir. Burada 64 olarak ayarlanmış.
+
+    width ve height: Giriş görüntülerinin boyutları. Burada 416x416 olarak ayarlanmış. Genellikle bu değerler, eğitim setindeki görüntülerin boyutlarıyla uyumlu olmalıdır.
+
+    channels: Görüntülerin renk kanalları. Renkli görüntüler için 3 (RGB), gri tonlamalı görüntüler için 1 olur.
+
+    momentum: Momentum terimi, ağırlık güncellemelerini daha stabil hale getirir. 0.949 olarak ayarlanmış.
+
+    decay: Ağırlıkların zamanla azalmasını sağlar. 0.0005 olarak ayarlanmış.
+
+    angle: Veri artırma için rastgele açı değiştirme. 0 olarak ayarlanmış, yani açı değiştirilmiyor.
+
+    saturation: Renk doygunluğunu değiştirir. 1.5 olarak ayarlanmış, yani renkler daha doygun hale getiriliyor.
+
+    exposure: Görüntülerin parlaklığını değiştirir. 1.5 olarak ayarlanmış.
+
+    hue: Renk tonunu değiştirir. 0.1 olarak ayarlanmış.
+
+    learning_rate: Öğrenme oranı, ağırlıkların güncellenme hızını belirler. 0.0013 olarak ayarlanmış.
+
+    burn_in: Öğrenme oranının başlangıçta düşük tutulacağı iterasyon sayısı. 1000 olarak ayarlanmış.
+
+    max_batches: Toplam eğitim iterasyonu. Burada 2000 olarak ayarlanmış.
+
+    policy: Öğrenme oranı değişim politikası. Burada steps olarak ayarlanmış.
+
+    steps: Öğrenme oranının değişeceği iterasyon adımları. Burada 1800 olarak ayarlanmış.
+
+    scales: Öğrenme oranının her steps adımında değişeceği ölçekler. Burada 0.1 olarak ayarlanmış.
+
+    mosaic: Veri artırma tekniği. Mosaic, birkaç görüntünün birleştirilmesini sağlar. 1 olarak ayarlanmış, yani mosaic kullanılıyor.
+
+    cutmix: Bir diğer veri artırma tekniği olan cutmix'i kontrol eder. Yorum satırına alınmış, yani kullanılmıyor.
+
+[convolutional] Bölümü
+
+Bu bölüm, ağın konvolüsyonel katmanlarını tanımlar. Konvolüsyonel katmanlar, özellik haritalarını çıkarır.
+
+    batch_normalize: Batch normalizasyonunun etkin olup olmadığını belirtir. 1 olarak ayarlanmış, yani etkin.
+    filters: Konvolüsyonel katmanın çıkış filtre sayısı.
+    size: Konvolüsyonel çekirdeğin boyutu (örneğin, 3x3).
+    stride: Konvolüsyon işleminin kaydırma miktarı (örneğin, 1 veya 2).
+    pad: Görüntüye kenar dolgusu ekleyip eklemeyeceğini belirtir. 1 olarak ayarlanmış, yani padding var.
+    activation: Aktivasyon fonksiyonu. Burada mish ve leaky kullanılıyor.
+
+[route] Bölümü
+
+Bu bölüm, katmanları birleştirir veya birden fazla katmanı birleştirir.
+
+    layers: Birleştirilecek katmanların indeksleri.
+
+[shortcut] Bölümü
+
+Bu bölüm, atlama bağlantılarını tanımlar. Atlama bağlantıları, ağı daha derinleştirmek için kullanılır.
+
+    from: Atlanacak katmanların indeksleri.
+    activation: Aktivasyon fonksiyonu. Burada linear olarak ayarlanmış, yani doğrudan bağlantı.
+
+[yolo] Bölümü
+
+Bu bölüm, YOLO (You Only Look Once) nesne tespiti kısmını tanımlar.
+
+    mask: Yolo katmanında kullanılacak ankrajları belirten indeksler.
+    anchors: Çeşitli boyutlarda kutuların köşe noktalarını tanımlar. Bu, nesne tespitinde kullanılan önceden tanımlı kutuların boyutlarıdır.
+    classes: Tespit edilecek nesne sınıfı sayısı. Burada 1 olarak ayarlanmış.
+    num: Kullanılan ankraj sayısı. Burada 9 olarak ayarlanmış.
+    jitter: Bu, yerleştirilen nesne kutularının rastgele bir miktar değiştirilmesidir.
+    ignore_thresh: Nesne tespitinde, eşik değerini belirler. 0.7 olarak ayarlanmış.
+    truth_thresh: Gerçek nesne etiketlerinin doğru şekilde eşleşmesi gereken eşik değeri. 1 olarak ayarlanmış.
+    scale_x_y: Nesne kutularının ölçeklenme faktörü.
+    iou_thresh: Nesne tespitinde, Intersection over Union (IoU) eşik değeri. 0.213 olarak ayarlanmış.
+    cls_normalizer: Sınıf normalizasyonu.
+    iou_normalizer: IoU normalizasyonu.
+    iou_loss: IoU kaybı türü. Burada ciou olarak ayarlanmış.
+    nms_kind: Non-Maximum Suppression (NMS) türü. Burada greedynms olarak ayarlanmış.
+    beta_nms: NMS için beta değeri.
+    max_delta: Maksimum delta değeri.
+
+Bu yapılandırma dosyası, YOLO modelinizi nasıl yapılandıracağınızı ve eğiteceğinizi belirler. Her bölüm, modelin belirli bir parçasını kontrol eder ve deneylerinize göre farklı parametreleri ayarlayarak modelin performansını optimize edebilirsiniz.
+
