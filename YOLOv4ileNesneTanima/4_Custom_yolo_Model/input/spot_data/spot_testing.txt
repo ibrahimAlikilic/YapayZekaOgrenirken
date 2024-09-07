@@ -1,48 +1,48 @@
-../../../../Masaüstü/DateSets/boston dynamics spot/186.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/187.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/188.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/189.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/190.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/191.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/192.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/193.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/194.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/195.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/196.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/197.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/198.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/199.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/200.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/201.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/202.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/203.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/204.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/205.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/206.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/207.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/208.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/209.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/210.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/211.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/212.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/213.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/214.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/215.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/216.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/217.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/218.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/219.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/220.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/221.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/222.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/223.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/224.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/225.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/226.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/227.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/228.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/229.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/230.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/231.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/232.jpg
-../../../../Masaüstü/DateSets/boston dynamics spot/233.jpg
+/content/yolov4/darknet/spot_data/spot_images/186.jpg
+/content/yolov4/darknet/spot_data/spot_images/187.jpg
+/content/yolov4/darknet/spot_data/spot_images/188.jpg
+/content/yolov4/darknet/spot_data/spot_images/189.jpg
+/content/yolov4/darknet/spot_data/spot_images/190.jpg
+/content/yolov4/darknet/spot_data/spot_images/191.jpg
+/content/yolov4/darknet/spot_data/spot_images/192.jpg
+/content/yolov4/darknet/spot_data/spot_images/193.jpg
+/content/yolov4/darknet/spot_data/spot_images/194.jpg
+/content/yolov4/darknet/spot_data/spot_images/195.jpg
+/content/yolov4/darknet/spot_data/spot_images/196.jpg
+/content/yolov4/darknet/spot_data/spot_images/197.jpg
+/content/yolov4/darknet/spot_data/spot_images/198.jpg
+/content/yolov4/darknet/spot_data/spot_images/199.jpg
+/content/yolov4/darknet/spot_data/spot_images/200.jpg
+/content/yolov4/darknet/spot_data/spot_images/201.jpg
+/content/yolov4/darknet/spot_data/spot_images/202.jpg
+/content/yolov4/darknet/spot_data/spot_images/203.jpg
+/content/yolov4/darknet/spot_data/spot_images/204.jpg
+/content/yolov4/darknet/spot_data/spot_images/205.jpg
+/content/yolov4/darknet/spot_data/spot_images/206.jpg
+/content/yolov4/darknet/spot_data/spot_images/207.jpg
+/content/yolov4/darknet/spot_data/spot_images/208.jpg
+/content/yolov4/darknet/spot_data/spot_images/209.jpg
+/content/yolov4/darknet/spot_data/spot_images/210.jpg
+/content/yolov4/darknet/spot_data/spot_images/211.jpg
+/content/yolov4/darknet/spot_data/spot_images/212.jpg
+/content/yolov4/darknet/spot_data/spot_images/213.jpg
+/content/yolov4/darknet/spot_data/spot_images/214.jpg
+/content/yolov4/darknet/spot_data/spot_images/215.jpg
+/content/yolov4/darknet/spot_data/spot_images/216.jpg
+/content/yolov4/darknet/spot_data/spot_images/217.jpg
+/content/yolov4/darknet/spot_data/spot_images/218.jpg
+/content/yolov4/darknet/spot_data/spot_images/219.jpg
+/content/yolov4/darknet/spot_data/spot_images/220.jpg
+/content/yolov4/darknet/spot_data/spot_images/221.jpg
+/content/yolov4/darknet/spot_data/spot_images/222.jpg
+/content/yolov4/darknet/spot_data/spot_images/223.jpg
+/content/yolov4/darknet/spot_data/spot_images/224.jpg
+/content/yolov4/darknet/spot_data/spot_images/225.jpg
+/content/yolov4/darknet/spot_data/spot_images/226.jpg
+/content/yolov4/darknet/spot_data/spot_images/227.jpg
+/content/yolov4/darknet/spot_data/spot_images/228.jpg
+/content/yolov4/darknet/spot_data/spot_images/229.jpg
+/content/yolov4/darknet/spot_data/spot_images/230.jpg
+/content/yolov4/darknet/spot_data/spot_images/231.jpg
+/content/yolov4/darknet/spot_data/spot_images/232.jpg
+/content/yolov4/darknet/spot_data/spot_images/233.jpg
