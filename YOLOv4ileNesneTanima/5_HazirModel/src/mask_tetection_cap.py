@@ -24,9 +24,9 @@ while True:
     ##########################################
 
     # labels.txt dosyasını oku
-    labels=["good","bad"]
+    labels=["good","bad","none"]
     if birKereRenk:
-        colors = np.array([[0, 0, 255], [255, 0, 0]]) 
+        colors = np.array([[255, 0, 0],[0, 165, 255],[0, 0, 255]]) 
         colors = colors.astype(int)
         birKereRenk=False
     
@@ -61,20 +61,19 @@ while True:
 
             # box çizim aşamasına geldik
             if confidence > 0.3:
-                if predicted_id < len(labels):
-                    label=labels[predicted_id] # labeli ne onu alalım
-                    bounding_box=object_detection[0:4] * np.array([frame_width,frame_height,frame_width,frame_height])
-                    (box_center_x,box_center_y,box_width,box_height)=bounding_box.astype("int")
-                    start_x=int(box_center_x-(box_width/2))
-                    start_y=int(box_center_y-(box_height/2))
-    
-                    # Non Max Ssuppression - Operation 2
-                    ids_list.append(predicted_id)
-                    confidences_list.append(float(confidence))
-                    boxes_list.append([start_x,start_y,int(box_width),int(box_height)])
-                    # end of Operation-2
-                else:
-                    continue
+                if predicted_id > 2:
+                    predicted_id=2
+                label=labels[predicted_id] # labeli ne onu alalım
+                bounding_box=object_detection[0:4] * np.array([frame_width,frame_height,frame_width,frame_height])
+                (box_center_x,box_center_y,box_width,box_height)=bounding_box.astype("int")
+                start_x=int(box_center_x-(box_width/2))
+                start_y=int(box_center_y-(box_height/2))
+
+                # Non Max Ssuppression - Operation 2
+                ids_list.append(predicted_id)
+                confidences_list.append(float(confidence))
+                boxes_list.append([start_x,start_y,int(box_width),int(box_height)])
+                # end of Operation-2
     # Non Max Ssuppression - Operation 3
     max_ids=cv2.dnn.NMSBoxes(boxes_list,confidences_list,0.5,0.4) # bu fonksiyon bana en yüksek güvenilirliğie sahip boxes ların id lerini döndürüyor
                             # son 2 parametre boundig_box ın güven skoru ve threshold değeri  (0.5,04 = bınlar optimal değerlerdir)
