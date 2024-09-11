@@ -1,6 +1,5 @@
 '''
-1) kod çalışırken gelen pencereyi hep aşağı indireceksin ki tüm resimler açılmış olsun
-2) window da chrome kullanman lazım diğer türlü olmaz.
+window da chrome kullanman lazım diğer türlü olmaz.
 '''
 
 from selenium import webdriver
@@ -12,7 +11,7 @@ import os
 import requests
 
 # Google Görseller URL'sini oluştur
-query = "boston dynamics spot dog pictures"  # Buraya arama yapmak istediğiniz kelimeyi girin
+query = ""  # Buraya arama yapmak istediğiniz kelimeyi girin
 url = f"https://www.google.com/search?q={query}&source=lnms&tbm=isch"
 
 # Webdriver'ı başlat
@@ -21,6 +20,8 @@ driver.get(url)
 
 # Sayfanın yüklenmesini bekleyin
 time.sleep(2)
+
+input("Sayfa hazır mı ? : ") # sayfayı en sona getirene kadar zaman kazanmak için bu soruyu sordum.
 
 # Tüm resim öğelerini bulun
 images = driver.find_elements(By.CSS_SELECTOR, "img")
